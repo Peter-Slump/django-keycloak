@@ -60,13 +60,18 @@ class Realm(TokenStorage):
     content_types = models.ManyToManyField(ContentType,
                                            through='django_keycloak.Resource')
 
+    _keycloak_realm = None
+
     @cached_property
     def keycloak_realm(self):
         """
         :rtype: keycloak.realm.Realm
         """
-        import django_keycloak.services.realm
-        return django_keycloak.services.realm.get_keycloak_realm(self)
+        if self._keycloak_realm is None:
+            import django_keycloak.services.realm
+            self._keycloak_realm = django_keycloak.services.realm.\
+                get_keycloak_realm(self)
+        return self._keycloak_realm
 
     @cached_property
     def keycloak_openid(self):
@@ -96,6 +101,9 @@ class Realm(TokenStorage):
     def certs_obj(self):
         import json
         return json.loads(self.certs)
+
+    def __str__(self):
+        return self.name
 
 
 class Resource(models.Model):

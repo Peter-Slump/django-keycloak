@@ -38,15 +38,15 @@ def get_keycloak_openid(realm):
     :param django_keycloak.models.Realm realm:
     :rtype: keycloak.openid_connect.KeycloakOpenidConnect
     """
-    well_known = None
-    if realm.well_known:
-        well_known = KeycloakWellKnown(content=realm.well_known)
-
-    return realm.keycloak_realm.open_id_connect(
+    openid = realm.keycloak_realm.open_id_connect(
         client_id=realm.client_id,
-        client_secret=realm.client_secret,
-        well_known=well_known
+        client_secret=realm.client_secret
     )
+
+    if realm.well_known:
+        openid.well_known.contents = json.loads(realm.well_known)
+
+    return openid
 
 
 def get_keycloak_authz(realm):
@@ -84,7 +84,17 @@ def refresh_well_known(realm):
     :param django_keycloak.models.Realm realm:
     :rtype django_keycloak.models.Realm
     """
-    keycloak_openid = realm.keycloak_openid
+    if realm.internal_server_url:
+        # While fetching the well_known we should not use the prepared URL
+        keycloak_openid = KeycloakRealm(
+            server_url=realm.internal_server_url,
+            realm_name=realm.name
+        ).open_id_connect(
+            client_id=realm.client_id,
+            client_secret=realm.client_secret
+        )
+    else:
+        keycloak_openid = realm.keycloak_openid
 
     well_known = keycloak_openid.well_known
 

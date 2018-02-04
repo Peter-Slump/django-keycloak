@@ -31,7 +31,7 @@ setup(
     ],
     install_requires=[
         'Django>=1.11',
-        'git+git://github.com/Peter-Slump/python-keycloak-client.git@0.0.1#egg=python-keycloak-client'
+        # 'git+git://github.com/Peter-Slump/python-keycloak-client.git@0.0.1#egg=python-keycloak-client'
     ],
     tests_require=[
         'pytest-django',
