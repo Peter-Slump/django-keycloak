@@ -1,10 +1,8 @@
 from datetime import timedelta
 
-import json
-
 from django.utils import timezone
+from requests.exceptions import HTTPError
 from keycloak.realm import KeycloakRealm
-from keycloak.well_known import KeycloakWellKnown
 
 try:
     from urllib.parse import urlparse
@@ -43,8 +41,8 @@ def get_keycloak_openid(realm):
         client_secret=realm.client_secret
     )
 
-    if realm.well_known:
-        openid.well_known.contents = json.loads(realm.well_known)
+    if realm._well_known_oidc:
+        openid.well_known.contents = realm.well_known_oidc
 
     return openid
 
@@ -62,7 +60,12 @@ def get_keycloak_uma(realm):
     :param django_keycloak.models.Realm realm:
     :rtype: keycloak.authz.KeycloakUMA
     """
-    return realm.keycloak_realm.uma()
+    uma = realm.keycloak_realm.uma()
+
+    if realm._well_known_uma:
+        uma.well_known.contents = realm.well_known_uma
+
+    return uma
 
 
 def refresh_certs(realm):
@@ -72,15 +75,15 @@ def refresh_certs(realm):
     """
     keycloak_openid = realm.keycloak_openid
 
-    certs = keycloak_openid.certs()
-
-    realm.certs = json.dumps(certs)
-    realm.save(update_fields=['certs'])
+    realm.certs = keycloak_openid.certs()
+    realm.save(update_fields=['_certs'])
     return realm
 
 
-def refresh_well_known(realm):
+def refresh_well_known_oidc(realm):
     """
+    Refresh Open ID Connect .well-known
+
     :param django_keycloak.models.Realm realm:
     :rtype django_keycloak.models.Realm
     """
@@ -98,8 +101,29 @@ def refresh_well_known(realm):
 
     well_known = keycloak_openid.well_known
 
-    realm.well_known = json.dumps(well_known.contents)
-    realm.save(update_fields=['well_known'])
+    realm.well_known_oidc = well_known.contents
+    realm.save(update_fields=['_well_known_oidc'])
+    return realm
+
+
+def refresh_well_known_uma(realm):
+    """
+    :param django_keycloak.models.Realm realm:
+    :rtype django_keycloak.models.Realm
+    """
+    if realm.internal_server_url:
+        # While fetching the well_known we should not use the prepared URL
+        keycloak_uma = KeycloakRealm(
+            server_url=realm.internal_server_url,
+            realm_name=realm.name
+        ).uma()
+    else:
+        keycloak_uma = realm.uma()
+
+    well_known = keycloak_uma.well_known
+
+    realm.well_known_uma = well_known.contents
+    realm.save(update_fields=['_well_known_uma'])
     return realm
 
 
@@ -117,10 +141,14 @@ def get_access_token(realm):
     if realm.access_token is None or realm.refresh_expires_before < now:
         token = realm.keycloak_openid.client_credentials(scope=scope)
     elif realm.expires_before < now:
-        token = realm.keycloak_openid.refresh_token(
-            refresh_token=realm.refresh_token,
-            scope=scope
-        )
+        try:
+            token = realm.keycloak_openid.refresh_token(
+                refresh_token=realm.refresh_token,
+                scope=scope
+            )
+        except HTTPError as e:
+            if e.response.json().get('code') == 'invalid_grant':
+                token = realm.keycloak_openid.client_credentials(scope=scope)
 
     if token:
         realm.access_token = token['access_token']

@@ -1,3 +1,4 @@
+import json
 import logging
 import uuid
 
@@ -43,19 +44,51 @@ class Realm(TokenStorage):
 
     server_url = models.CharField(max_length=255)
 
-    # Server URL on internal netwerk calls. For example when used with Docker
-    # Compose. Only supply when internal calls should go to a different url as
-    # the end-user will communicate with.
-    internal_server_url = models.CharField(max_length=255, null=True)
+    internal_server_url = models.CharField(
+        max_length=255,
+        null=True,
+        help_text='URL on internal netwerk calls. For example when used with '
+                  'Docker Compose. Only supply when internal calls should go '
+                  'to a different url as the end-user will communicate with.'
+    )
 
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, unique=True,
+                            help_text='Name as known on the Keycloak server. '
+                                      'This name is used in the API paths '
+                                      'of this Realm.')
 
     client_id = models.CharField(max_length=255)
     client_secret = models.CharField(max_length=255)
 
-    certs = models.TextField()
+    _certs = models.TextField()
 
-    well_known = models.TextField()
+    @property
+    def certs(self):
+        return json.loads(self._certs)
+
+    @certs.setter
+    def certs(self, content):
+        self._certs = json.dumps(content)
+
+    _well_known_oidc = models.TextField(blank=True)
+
+    @property
+    def well_known_oidc(self):
+        return json.loads(self._well_known_oidc)
+
+    @well_known_oidc.setter
+    def well_known_oidc(self, content):
+        self._well_known_oidc = json.dumps(content)
+
+    _well_known_uma = models.TextField(blank=True)
+
+    @property
+    def well_known_uma(self):
+        return json.loads(self._well_known_uma)
+
+    @well_known_uma.setter
+    def well_known_uma(self, content):
+        self._well_known_uma = json.dumps(content)
 
     content_types = models.ManyToManyField(ContentType,
                                            through='django_keycloak.Resource')
