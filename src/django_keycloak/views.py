@@ -79,8 +79,9 @@ class LoginComplete(RedirectView):
 class Logout(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
-        self.request.realm.keycloak_openid.logout(
-            self.request.user.oidc_profile.refresh_token
-        )
+        if hasattr(self.request.user, 'oidc_profile'):
+            self.request.realm.keycloak_openid.logout(
+                self.request.user.oidc_profile.refresh_token
+            )
         logout(self.request)
         return reverse('login')

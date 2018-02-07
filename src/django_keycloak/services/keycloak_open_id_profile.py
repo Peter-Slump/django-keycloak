@@ -127,7 +127,7 @@ def get_entitlement(oidc_profile):
 
     rpt_decoded = oidc_profile.realm.keycloak_openid.decode_token(
         token=rpt['rpt'],
-        key=oidc_profile.realm.certs_obj,
+        key=oidc_profile.realm.certs,
         options={
             'verify_signature': True,
             'exp': True,

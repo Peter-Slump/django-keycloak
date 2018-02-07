@@ -130,11 +130,6 @@ class Realm(TokenStorage):
         import django_keycloak.services.realm
         return django_keycloak.services.realm.get_keycloak_uma(realm=self)
 
-    @property
-    def certs_obj(self):
-        import json
-        return json.loads(self.certs)
-
     def __str__(self):
         return self.name
 
