@@ -17,11 +17,16 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='KeycloakOpenIDProfile',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
                 ('sub', models.CharField(max_length=255, unique=True)),
                 ('access_token', models.TextField()),
                 ('refresh_token', models.TextField()),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='oidc_account', to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='oidc_account',
+                    to=settings.AUTH_USER_MODEL)
+                 ),
             ],
         ),
     ]

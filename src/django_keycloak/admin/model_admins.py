@@ -1,9 +1,7 @@
 from django.contrib import admin, messages
-from requests.exceptions import HTTPError
 
 from django_keycloak.models import Realm
 
-import django_keycloak.services.content_types
 import django_keycloak.services.permissions
 import django_keycloak.services.realm
 
@@ -48,30 +46,6 @@ def refresh_certs(modeladmin, request, queryset):
 refresh_certs.short_description = 'Refresh Certificates'
 
 
-def sync_content_types(modeladmin, request, queryset):
-    for realm in queryset:
-        try:
-            django_keycloak.services.content_types.sync_all(realm=realm)
-        except HTTPError as e:
-            try:
-                error = e.response.json()
-            except ValueError:
-                error = {'error_description': 'Unknown error'}
-            modeladmin.message_user(
-                request=request,
-                message='Keycloak: {}'.format(error['error_description']),
-                level=messages.ERROR
-            )
-    modeladmin.message_user(
-        request=request,
-        message='Content types synchronized',
-        level=messages.SUCCESS
-    )
-
-
-sync_content_types.short_description = 'Synchronize content types'
-
-
 def clear_client_tokens(modeladmin, request, queryset):
     queryset.update(
         access_token=None,
@@ -103,7 +77,6 @@ class RealmAdmin(admin.ModelAdmin):
         refresh_open_id_connect_well_known,
         refresh_uma_well_known,
         refresh_certs,
-        sync_content_types,
         clear_client_tokens,
         synchronize_permissions
     ]

@@ -59,7 +59,10 @@ class KeycloakAuthorizationCodeBackend(object):
         logger.debug(rpt_decoded)
 
         return [
-            role for role in rpt_decoded['resource_access'].get(user_obj.oidc_profile.realm.client_id, {'roles': []})['roles']
+            role for role in rpt_decoded['resource_access'].get(
+                user_obj.oidc_profile.realm.client_id,
+                {'roles': []}
+            )['roles']
         ]
 
     def has_perm(self, user_obj, perm, obj=None):

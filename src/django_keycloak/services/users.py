@@ -24,4 +24,10 @@ def add_user(realm, user):
     credentials = credential_representation_from_hash(hash_=user.password)
 
     realm.keycloak_admin.realms.by_name(realm.name).users.create(
-        username=user.username, credentials=credentials, first_name=user.first_name, last_name=user.last_name, email=user.email, enabled=user.is_active)
+        username=user.username,
+        credentials=credentials,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        email=user.email,
+        enabled=user.is_active
+    )

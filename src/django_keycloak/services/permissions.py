@@ -21,7 +21,8 @@ def synchronize(realm):
         try:
             realm.keycloak_admin.realms.by_name(realm.name)\
                 .clients.by_id(keycloak_client_id)\
-                .roles.create(name=permission.codename, description=permission.name)
+                .roles.create(name=permission.codename,
+                              description=permission.name)
         except HTTPError as e:
             if e.response.status_code != 409:
                 raise

@@ -10,7 +10,8 @@ def get_keycloak_id(realm):
     :param django_keycloak.models.Realm realm:
     :return:
     """
-    clients = realm.keycloak_admin.realms.by_name(name=realm.name).clients.all()
+    clients = realm.keycloak_admin.realms.by_name(name=realm.name)\
+        .clients.all()
     for client in clients:
         if client['clientId'] == realm.client_id:
             return client['id']
