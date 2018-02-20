@@ -91,9 +91,6 @@ class Realm(TokenStorage):
     def well_known_uma(self, content):
         self._well_known_uma = json.dumps(content)
 
-    content_types = models.ManyToManyField(ContentType,
-                                           through='django_keycloak.Resource')
-
     _keycloak_realm = None
 
     @cached_property
