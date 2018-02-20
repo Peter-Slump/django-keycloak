@@ -2,6 +2,7 @@ import json
 import logging
 import uuid
 
+from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.conf import settings
@@ -107,6 +108,14 @@ class Realm(TokenStorage):
         return self._keycloak_realm
 
     @cached_property
+    def keycloak_admin(self):
+        """
+        :rtype: keycloak.admin.KeycloakAdmin
+        """
+        import django_keycloak.services.realm
+        return django_keycloak.services.realm.get_admin_client(realm=self)
+
+    @cached_property
     def keycloak_openid(self):
         """
         :rtype: keycloak.openid_connect.KeycloakOpenidConnect
@@ -134,16 +143,17 @@ class Realm(TokenStorage):
         return self.name
 
 
-class Resource(models.Model):
+class Role(models.Model):
 
     realm = models.ForeignKey('django_keycloak.Realm',
-                              related_name='resources',
+                              related_name='roles',
                               on_delete=models.CASCADE)
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    permission = models.ForeignKey(Permission,
+                                   on_delete=models.CASCADE)
 
     reference = models.CharField(max_length=50)
 
     class Meta(object):
         unique_together = (
-            ('realm', 'content_type')
+            ('realm', 'permission')
         )

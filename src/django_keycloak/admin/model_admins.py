@@ -4,6 +4,7 @@ from requests.exceptions import HTTPError
 from django_keycloak.models import Realm
 
 import django_keycloak.services.content_types
+import django_keycloak.services.permissions
 import django_keycloak.services.realm
 
 
@@ -88,6 +89,14 @@ def clear_client_tokens(modeladmin, request, queryset):
 clear_client_tokens.short_description = 'Clear client tokens'
 
 
+def synchronize_permissions(modeladmin, request, queryset):
+    for realm in queryset:
+        django_keycloak.services.permissions.synchronize(realm=realm)
+
+
+synchronize_permissions.short_description = 'Synchronize permissions'
+
+
 class RealmAdmin(admin.ModelAdmin):
 
     actions = [
@@ -95,7 +104,8 @@ class RealmAdmin(admin.ModelAdmin):
         refresh_uma_well_known,
         refresh_certs,
         sync_content_types,
-        clear_client_tokens
+        clear_client_tokens,
+        synchronize_permissions
     ]
 
     fieldsets = (

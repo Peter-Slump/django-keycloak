@@ -1,4 +1,5 @@
 from datetime import timedelta
+from functools import partial
 
 from django.utils import timezone
 from requests.exceptions import HTTPError
@@ -135,7 +136,7 @@ def get_access_token(realm):
     :rtype: str
     """
     token = None
-    scope = 'uma_protection'
+    scope = 'uma_protection realm-management'
 
     now = timezone.now()
     if realm.access_token is None or realm.refresh_expires_before < now:
@@ -161,3 +162,14 @@ def get_access_token(realm):
                                   'refresh_token', 'refresh_expires_before'])
 
     return realm.access_token
+
+
+def get_admin_client(realm):
+    """
+    Get the Keycloak admin client configured for given realm.
+
+    :param django_keycloak.models.Realm realm:
+    :rtype: keycloak.admin.KeycloakAdmin
+    """
+    token = partial(get_access_token, realm)
+    return realm.keycloak_realm.admin.set_token(token=token)

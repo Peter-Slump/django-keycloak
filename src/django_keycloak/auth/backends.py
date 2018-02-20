@@ -56,9 +56,10 @@ class KeycloakAuthorizationCodeBackend(object):
         rpt_decoded = django_keycloak.services.keycloak_open_id_profile\
             .get_entitlement(oidc_profile=user_obj.oidc_profile)
 
+        logger.debug(rpt_decoded)
+
         return [
-            permission['resource_set_id'] for permission
-            in rpt_decoded['authorization']['permissions']
+            role for role in rpt_decoded['resource_access'].get(user_obj.oidc_profile.realm.client_id, {'roles': []})['roles']
         ]
 
     def has_perm(self, user_obj, perm, obj=None):
