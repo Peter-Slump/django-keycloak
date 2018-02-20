@@ -18,8 +18,8 @@ from django.conf.urls import url
 from django_keycloak import views
 
 urlpatterns = [
-    url(r'^login$', views.Login.as_view(), name='login'),
+    url(r'^login$', views.Login.as_view(), name='keycloak_login'),
     url(r'^login-complete$', views.LoginComplete.as_view(),
         name='login-complete'),
-    url(r'^logout$', views.Logout.as_view(), name='logout')
+    url(r'^logout$', views.Logout.as_view(), name='keycloak_logout')
 ]

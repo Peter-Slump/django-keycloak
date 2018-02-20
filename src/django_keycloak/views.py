@@ -3,11 +3,14 @@ from __future__ import unicode_literals
 
 import logging
 
+from django.shortcuts import resolve_url
+
 try:
     from urllib.parse import urljoin  # noqa: F401
 except ImportError:
     from urlparse import urljoin  # noqa: F401
 
+from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.http.response import (
     HttpResponseBadRequest,
@@ -84,4 +87,8 @@ class Logout(RedirectView):
                 self.request.user.oidc_profile.refresh_token
             )
         logout(self.request)
-        return reverse('login')
+
+        if settings.LOGOUT_REDIRECT_URL:
+            return resolve_url(settings.LOGOUT_REDIRECT_URL)
+
+        return reverse('keycloak_login')

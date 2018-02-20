@@ -37,6 +37,9 @@ def update_or_create(realm, code, redirect_uri):
     refresh_expires_before = now + timedelta(
         seconds=response_dict['refresh_expires_in'])
 
+    userinfo = realm.keycloak_openid.userinfo(
+        token=response_dict['access_token'])
+
     try:
         keycloak_profile = realm.openid_profiles.get(
             sub=id_token_object['sub'])
@@ -52,6 +55,13 @@ def update_or_create(realm, code, redirect_uri):
 
         logger.debug('KeycloakOpenIDProfile found, sub %s' %
                      id_token_object['sub'])
+
+        user = keycloak_profile.user
+        user.email = userinfo.get('email', '')
+        user.first_name = userinfo.get('given_name', '')
+        user.last_name = userinfo.get('family_name', '')
+        user.save(update_fields=['email', 'first_name', 'last_name'])
+
         return keycloak_profile
     except KeycloakOpenIDProfile.DoesNotExist:
         logger.debug("KeycloakOpenIDProfile for sub %s not found, so it'll be "
@@ -64,9 +74,6 @@ def update_or_create(realm, code, redirect_uri):
         user = UserModel()
         user.username = id_token_object['sub']
         user.set_unusable_password()
-
-    userinfo = realm.keycloak_openid.userinfo(
-        token=response_dict['access_token'])
 
     user.email = userinfo.get('email', '')
     user.first_name = userinfo.get('given_name', '')
