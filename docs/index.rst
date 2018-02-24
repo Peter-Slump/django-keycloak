@@ -19,7 +19,7 @@ Install requirement.
 
 .. code-block:: bash
 
-    $ pip install git@github.com:Peter-Slump/django-keycloak.git
+    $ pip install git+https://github.com/Peter-Slump/django-keycloak.git
 
 Add `django-keycloak` to your installed apps, configure the authentication
 backend and middleware. Point to the correct login page.
