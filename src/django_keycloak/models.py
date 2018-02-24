@@ -3,7 +3,6 @@ import logging
 import uuid
 
 from django.contrib.auth.models import Permission
-from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.conf import settings
 from django.utils.functional import cached_property
