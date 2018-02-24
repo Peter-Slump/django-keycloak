@@ -47,6 +47,7 @@ class Realm(TokenStorage):
 
     internal_server_url = models.CharField(
         max_length=255,
+        blank=True,
         null=True,
         help_text='URL on internal netwerk calls. For example when used with '
                   'Docker Compose. Only supply when internal calls should go '

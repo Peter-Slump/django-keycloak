@@ -19,7 +19,6 @@ setup(
     extras_require={
         'dev': [
             'bumpversion==0.5.3',
-            'twine==1.9.1',
         ],
         'doc': [
             'Sphinx==1.4.4',
@@ -31,7 +30,10 @@ setup(
     ],
     install_requires=[
         'Django>=1.11',
-        # 'git+git://github.com/Peter-Slump/python-keycloak-client.git@0.0.1#egg=python-keycloak-client'
+        'python-keycloak-client'
+    ],
+    dependency_links=[
+        'git+https://github.com/Peter-Slump/python-keycloak-client.git@master#egg=python-keycloak-client'
     ],
     tests_require=[
         'pytest-django',
@@ -42,7 +44,7 @@ setup(
     license='MIT',
     author='Peter Slump',
     author_email='peter@yarf.nl',
-    description='Install Dynamic Django Keycloak.',
+    description='Install Django Keycloak.',
     classifiers=[]
 
 )
