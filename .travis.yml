@@ -14,6 +14,7 @@ matrix:
       env: DJANGO_VERSION=2.0
 before_install:
   - pip install -U pip
+  - pip install -q Django==$DJANGO_VERSION
   - pip install -U wheel setuptools flake8
 install:
   - python setup.py -q install

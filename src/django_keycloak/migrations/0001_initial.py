@@ -52,14 +52,14 @@ class Migration(migrations.Migration):
                 ('refresh_expires_before', models.DateTimeField(null=True)),
                 ('server_url', models.CharField(max_length=255)),
                 ('internal_server_url', models.CharField(
-                    help_text='URL on internal netwerk calls. For example when '
-                              'used with Docker Compose. Only supply when '
+                    help_text='URL on internal netwerk calls. For example when'
+                              ' used with Docker Compose. Only supply when '
                               'internal calls should go to a different url as '
                               'the end-user will communicate with.',
                     max_length=255, null=True, blank=True)),
                 ('name', models.CharField(
-                    help_text='Name as known on the Keycloak server. This name '
-                              'is used in the API paths of this Realm.',
+                    help_text='Name as known on the Keycloak server. This name'
+                              ' is used in the API paths of this Realm.',
                     max_length=255, unique=True)),
                 ('client_id', models.CharField(max_length=255)),
                 ('client_secret', models.CharField(max_length=255)),
@@ -88,9 +88,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='keycloakopenidprofile',
             name='realm',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                    related_name='openid_profiles',
-                                    to='django_keycloak.Realm'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='openid_profiles',
+                to='django_keycloak.Realm'
+            ),
         ),
         migrations.AddField(
             model_name='keycloakopenidprofile',
