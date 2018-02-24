@@ -92,7 +92,7 @@ class Migration(migrations.Migration):
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name='openid_profiles',
                 to='django_keycloak.Realm'
-            ),
+                ),
         ),
         migrations.AddField(
             model_name='keycloakopenidprofile',
