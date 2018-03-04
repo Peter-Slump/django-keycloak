@@ -1,6 +1,9 @@
 # Django Keycloak
 
 [![Build Status](https://www.travis-ci.org/Peter-Slump/django-keycloak.svg?branch=master)](https://www.travis-ci.org/Peter-Slump/django-keycloak)
+[![Documentation Status](https://readthedocs.org/projects/django-keycloak/badge/?version=latest)](http://django-keycloak.readthedocs.io/en/latest/?badge=latest)
+[![codecov](https://codecov.io/gh/Peter-Slump/django-keycloak/branch/master/graph/badge.svg)](https://codecov.io/gh/Peter-Slump/django-keycloak)
+[![Maintainability](https://api.codeclimate.com/v1/badges/eb19f47dc03dec40cea7/maintainability)](https://codeclimate.com/github/Peter-Slump/django-keycloak/maintainability)
 
 Django app to add Keycloak  support to your project.
 
