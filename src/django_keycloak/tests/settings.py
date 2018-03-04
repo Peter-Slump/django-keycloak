@@ -1,4 +1,4 @@
-import os
+import logging
 
 PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.MD5PasswordHasher',
@@ -37,5 +37,4 @@ DATABASES = {
   }
 }
 
-import logging
 logging.disable(logging.CRITICAL)

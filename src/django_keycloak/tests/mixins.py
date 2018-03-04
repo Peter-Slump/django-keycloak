@@ -17,7 +17,7 @@ class MockTestCaseMixin(object):
         return self._mocks[target].start()
 
     def tearDown(self):
-        for mock in self._mocks.values():
-            mock.stop()
+        for mock_ in self._mocks.values():
+            mock_.stop()
 
         return super(MockTestCaseMixin, self).tearDown()
