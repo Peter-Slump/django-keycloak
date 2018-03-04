@@ -1,2 +1,4 @@
 [run]
-omit = */tests/*
+omit =
+    */tests/*
+    src/django_keycloak/factories.py
