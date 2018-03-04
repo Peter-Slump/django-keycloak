@@ -26,19 +26,21 @@ setup(
         ]
     },
     setup_requires=[
-        'pytest-runner'
+        'pytest-runner',
+        'python-keycloak-client',
     ],
     dependency_links=[
         'http://github.com/Peter-Slump/python-keycloak-client/tarball/master#egg=python-keycloak-client'
     ],
     install_requires=[
         'Django>=1.11',
-        'python-keycloak-client',
     ],
     tests_require=[
         'pytest-django',
         'pytest-cov',
         'mock>=2.0',
+        'factory-boy',
+        'freezegun'
     ],
     url='https://github.com/Peter-Slump/django-keycloak',
     license='MIT',

@@ -20,3 +20,7 @@ install:
   - python setup.py -q install
 script:
   - flake8 ./src
+  - python setup.py test --addopts "--cov=django_keycloak"
+
+after_success:
+  - codecov

@@ -56,19 +56,6 @@ def get_keycloak_authz(realm):
     return realm.keycloak_realm.authz(client_id=realm.client_id)
 
 
-def get_keycloak_uma(realm):
-    """
-    :param django_keycloak.models.Realm realm:
-    :rtype: keycloak.authz.KeycloakUMA
-    """
-    uma = realm.keycloak_realm.uma()
-
-    if realm._well_known_uma:
-        uma.well_known.contents = realm.well_known_uma
-
-    return uma
-
-
 def refresh_certs(realm):
     """
     :param django_keycloak.models.Realm realm:
@@ -107,27 +94,6 @@ def refresh_well_known_oidc(realm):
     return realm
 
 
-def refresh_well_known_uma(realm):
-    """
-    :param django_keycloak.models.Realm realm:
-    :rtype django_keycloak.models.Realm
-    """
-    if realm.internal_server_url:
-        # While fetching the well_known we should not use the prepared URL
-        keycloak_uma = KeycloakRealm(
-            server_url=realm.internal_server_url,
-            realm_name=realm.name
-        ).uma()
-    else:
-        keycloak_uma = realm.uma()
-
-    well_known = keycloak_uma.well_known
-
-    realm.well_known_uma = well_known.contents
-    realm.save(update_fields=['_well_known_uma'])
-    return realm
-
-
 def get_access_token(realm):
     """
     Get client access_token
@@ -136,7 +102,7 @@ def get_access_token(realm):
     :rtype: str
     """
     token = None
-    scope = 'uma_protection realm-management'
+    scope = 'realm-management'
 
     now = timezone.now()
     if realm.access_token is None or realm.refresh_expires_before < now:

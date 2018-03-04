@@ -49,7 +49,8 @@ def update_or_create(realm, code, redirect_uri):
         keycloak_profile.expires_before = expires_before
         keycloak_profile.refresh_token = response_dict['refresh_token']
         keycloak_profile.refresh_expires_before = refresh_expires_before
-        keycloak_profile.save(update_fields=['access_token', 'expires_before',
+        keycloak_profile.save(update_fields=['access_token',
+                                             'expires_before',
                                              'refresh_token',
                                              'refresh_expires_before'])
 

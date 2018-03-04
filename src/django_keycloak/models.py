@@ -81,16 +81,6 @@ class Realm(TokenStorage):
     def well_known_oidc(self, content):
         self._well_known_oidc = json.dumps(content)
 
-    _well_known_uma = models.TextField(blank=True)
-
-    @property
-    def well_known_uma(self):
-        return json.loads(self._well_known_uma)
-
-    @well_known_uma.setter
-    def well_known_uma(self, content):
-        self._well_known_uma = json.dumps(content)
-
     _keycloak_realm = None
 
     @cached_property
@@ -127,14 +117,6 @@ class Realm(TokenStorage):
         """
         import django_keycloak.services.realm
         return django_keycloak.services.realm.get_keycloak_authz(realm=self)
-
-    @cached_property
-    def uma(self):
-        """
-        :rtype: keycloak.uma.KeycloakUMA
-        """
-        import django_keycloak.services.realm
-        return django_keycloak.services.realm.get_keycloak_uma(realm=self)
 
     def __str__(self):
         return self.name

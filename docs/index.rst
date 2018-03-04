@@ -89,19 +89,6 @@ content for the OpenID Connect functionality and caches this in the database. In
 this way it's not required to fetch this file before each request regarding
 OpenID Connect to the Keycloak server.
 
------------------------
-Refresh UMA .well-known
------------------------
-
-In the Django Admin you can apply the action "Refresh UMA .well-known" for a
-realm. This retrieves the .well-known content for the UMA functionality and
-caches this in the database. In this way it's not required to fetch this file
-before each request regarding UMA to the Keycloak server.
-
-.. note::
-    This is a legacy action. There is currently no UMA-related functionality
-    available in Django-Keycloak.
-
 .. _refresh_certificates:
 
 --------------------

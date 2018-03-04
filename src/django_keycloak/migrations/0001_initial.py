@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('auth', '0009_alter_user_last_name_max_length'),
+        ('auth', '0008_alter_user_username_max_length'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
@@ -65,7 +65,6 @@ class Migration(migrations.Migration):
                 ('client_secret', models.CharField(max_length=255)),
                 ('_certs', models.TextField()),
                 ('_well_known_oidc', models.TextField(blank=True)),
-                ('_well_known_uma', models.TextField(blank=True)),
             ],
             options={
                 'abstract': False,

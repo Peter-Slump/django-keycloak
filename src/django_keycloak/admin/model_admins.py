@@ -20,19 +20,6 @@ refresh_open_id_connect_well_known.short_description = 'Refresh OpenID ' \
                                                        'Connect .well-known'
 
 
-def refresh_uma_well_known(modeladmin, request, queryset):
-    for realm in queryset:
-        django_keycloak.services.realm.refresh_well_known_uma(realm=realm)
-    modeladmin.message_user(
-        request=request,
-        message='UMA .well-known refreshed',
-        level=messages.SUCCESS
-    )
-
-
-refresh_uma_well_known.short_description = 'Refresh UMA .well-known'
-
-
 def refresh_certs(modeladmin, request, queryset):
     for realm in queryset:
         django_keycloak.services.realm.refresh_certs(realm=realm)
@@ -75,7 +62,6 @@ class RealmAdmin(admin.ModelAdmin):
 
     actions = [
         refresh_open_id_connect_well_known,
-        refresh_uma_well_known,
         refresh_certs,
         clear_client_tokens,
         synchronize_permissions
@@ -86,15 +72,14 @@ class RealmAdmin(admin.ModelAdmin):
             'fields': ('name',)
         }),
         ('Location', {
-            'fields': ('server_url', 'internal_server_url', '_well_known_oidc',
-                       '_well_known_uma')
+            'fields': ('server_url', 'internal_server_url', '_well_known_oidc')
         }),
         ('Credentials', {
             'fields': ('client_id', 'client_secret')
         })
     )
 
-    readonly_fields = ('_well_known_oidc', '_well_known_uma')
+    readonly_fields = ('_well_known_oidc',)
 
 
 admin.site.register(Realm, RealmAdmin)
