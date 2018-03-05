@@ -29,10 +29,8 @@ setup(
         'pytest-runner',
         'python-keycloak-client',
     ],
-    dependency_links=[
-        'http://github.com/Peter-Slump/python-keycloak-client/tarball/master#egg=python-keycloak-client'
-    ],
     install_requires=[
+        'python-keycloak-client',
         'Django>=1.11',
     ],
     tests_require=[

@@ -142,5 +142,4 @@ def get_entitlement(oidc_profile):
             'iat': True,
             'aud': True
         })
-    logger.debug('get_keycloak_permissions %s', rpt_decoded)
     return rpt_decoded
