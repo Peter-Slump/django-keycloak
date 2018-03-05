@@ -13,11 +13,12 @@ import django_keycloak.services.keycloak_open_id_profile
 
 
 class ServicesKeycloakOpenIDProfileGetActiveAccessTokenTestCase(
-    MockTestCaseMixin, TestCase):
+        MockTestCaseMixin, TestCase):
 
     def setUp(self):
         self.mocked_get_active_access_token = self.setup_mock(
-            'django_keycloak.services.keycloak_open_id_profile.get_active_access_token'
+            'django_keycloak.services.keycloak_open_id_profile'
+            '.get_active_access_token'
         )
 
         self.oidc_profile = KeycloakOpenIDProfileFactory(
@@ -40,13 +41,14 @@ class ServicesKeycloakOpenIDProfileGetActiveAccessTokenTestCase(
         self.oidc_profile.realm.authz.entitlement.assert_called_once_with(
             token=self.mocked_get_active_access_token.return_value
         )
-        self.oidc_profile.realm.keycloak_openid.decode_token.assert_called_once_with(
-            token='RPT_VALUE',
-            key=self.oidc_profile.realm.certs,
-            options={
-                'verify_signature': True,
-                'exp': True,
-                'iat': True,
-                'aud': True
-            }
-        )
+        self.oidc_profile.realm.keycloak_openid.decode_token\
+            .assert_called_once_with(
+                token='RPT_VALUE',
+                key=self.oidc_profile.realm.certs,
+                options={
+                    'verify_signature': True,
+                    'exp': True,
+                    'iat': True,
+                    'aud': True
+                }
+            )

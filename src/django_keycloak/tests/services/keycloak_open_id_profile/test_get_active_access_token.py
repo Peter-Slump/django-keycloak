@@ -13,7 +13,7 @@ import django_keycloak.services.keycloak_open_id_profile
 
 
 class ServicesKeycloakOpenIDProfileGetActiveAccessTokenTestCase(
-    MockTestCaseMixin, TestCase):
+        MockTestCaseMixin, TestCase):
 
     def setUp(self):
         self.oidc_profile = KeycloakOpenIDProfileFactory(
