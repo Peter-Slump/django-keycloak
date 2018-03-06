@@ -17,7 +17,7 @@ Django Keycloak
 
 Django app to add Keycloak  support to your project.
 
-`Read documentation <http://django-keycloak.readthedocs.io/en/latest/>`_`
+`Read documentation <http://django-keycloak.readthedocs.io/en/latest/>`_
 
 http://www.keycloak.org/
 
