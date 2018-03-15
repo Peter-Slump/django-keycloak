@@ -7,34 +7,34 @@ from django.test import TestCase
 from freezegun import freeze_time
 from keycloak.openid_connect import KeycloakOpenidConnect
 
-from django_keycloak.factories import RealmFactory
-from django_keycloak.models import KeycloakOpenIDProfile
+from django_keycloak.factories import ClientFactory
+from django_keycloak.models import OpenIdConnectProfile
 from django_keycloak.tests.mixins import MockTestCaseMixin
 
-import django_keycloak.services.keycloak_open_id_profile
+import django_keycloak.services.oidc_profile
 
 
 class ServicesKeycloakOpenIDProfileUpdateOrCreateTestCase(MockTestCaseMixin,
                                                           TestCase):
 
     def setUp(self):
-        self.realm = RealmFactory(_certs='{}')
-        self.realm.keycloak_openid = mock.MagicMock(
+        self.client = ClientFactory(realm___certs='{}')
+        self.client.openid_api_client = mock.MagicMock(
             spec_set=KeycloakOpenidConnect)
-        self.realm.keycloak_openid.authorization_code.return_value = {
+        self.client.openid_api_client.authorization_code.return_value = {
             'id_token': 'id-token',
             'expires_in': 600,
             'refresh_expires_in': 3600,
             'access_token': 'access-token',
             'refresh_token': 'refresh-token'
         }
-        self.realm.keycloak_openid.well_known = {
+        self.client.openid_api_client.well_known = {
             'id_token_signing_alg_values_supported': ['signing-alg']
         }
-        self.realm.keycloak_openid.decode_token.return_value = {
+        self.client.openid_api_client.decode_token.return_value = {
             'sub': 'some-sub'
         }
-        self.realm.keycloak_openid.userinfo.return_value = {
+        self.client.openid_api_client.userinfo.return_value = {
             'email': 'test@example.com',
             'given_name': 'Some given name',
             'family_name': 'Some family name'
@@ -42,21 +42,21 @@ class ServicesKeycloakOpenIDProfileUpdateOrCreateTestCase(MockTestCaseMixin,
 
     @freeze_time('2018-03-01 00:00:00')
     def test_create(self):
-        django_keycloak.services.keycloak_open_id_profile.update_or_create(
-            realm=self.realm,
+        django_keycloak.services.oidc_profile.update_or_create_from_code(
+            client=self.client,
             code='some-code',
             redirect_uri='https://redirect'
         )
-        self.realm.keycloak_openid.authorization_code.assert_called_once_with(
-            code='some-code', redirect_uri='https://redirect'
-        )
-        self.realm.keycloak_openid.decode_token.assert_called_once_with(
+        self.client.openid_api_client.authorization_code\
+            .assert_called_once_with(code='some-code',
+                                     redirect_uri='https://redirect')
+        self.client.openid_api_client.decode_token.assert_called_once_with(
             token='id-token',
             key=dict(),
             algorithms=['signing-alg']
         )
 
-        profile = KeycloakOpenIDProfile.objects.get(sub='some-sub')
+        profile = OpenIdConnectProfile.objects.get(sub='some-sub')
         self.assertEqual(profile.sub, 'some-sub'),
         self.assertEqual(profile.access_token, 'access-token')
         self.assertEqual(profile.refresh_token, 'refresh-token')
@@ -81,8 +81,8 @@ class ServicesKeycloakOpenIDProfileUpdateOrCreateTestCase(MockTestCaseMixin,
             first_name='',
             last_name=''
         )
-        profile = KeycloakOpenIDProfile.objects.create(
-            realm=self.realm,
+        profile = OpenIdConnectProfile.objects.create(
+            realm=self.client.realm,
             sub='some-sub',
             user=user,
             access_token='another-access-token',
@@ -91,15 +91,15 @@ class ServicesKeycloakOpenIDProfileUpdateOrCreateTestCase(MockTestCaseMixin,
             refresh_expires_before=datetime.now()
         )
 
-        django_keycloak.services.keycloak_open_id_profile.update_or_create(
-            realm=self.realm,
+        django_keycloak.services.oidc_profile.update_or_create_from_code(
+            client=self.client,
             code='some-code',
             redirect_uri='https://redirect'
         )
-        self.realm.keycloak_openid.authorization_code.assert_called_once_with(
-            code='some-code', redirect_uri='https://redirect'
-        )
-        self.realm.keycloak_openid.decode_token.assert_called_once_with(
+        self.client.openid_api_client.authorization_code\
+            .assert_called_once_with(code='some-code',
+                                     redirect_uri='https://redirect')
+        self.client.openid_api_client.decode_token.assert_called_once_with(
             token='id-token',
             key=dict(),
             algorithms=['signing-alg']

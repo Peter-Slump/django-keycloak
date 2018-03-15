@@ -17,7 +17,7 @@ def synchronize(client):
         client=client)
 
     role_api = client.admin_api_client.realms.by_name(client.realm.name)\
-                .clients.by_id(keycloak_client_id).roles
+        .clients.by_id(keycloak_client_id).roles
 
     for permission in Permission.objects.all():
 

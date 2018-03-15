@@ -91,7 +91,7 @@ class Client(models.Model):
         """
         :rtype: keycloak.admin.KeycloakAdmin
         """
-        import django_keycloak.services.realm
+        import django_keycloak.services.client
         return django_keycloak.services.client.get_admin_client(client=self)
 
     @cached_property
@@ -99,7 +99,7 @@ class Client(models.Model):
         """
         :rtype: keycloak.openid_connect.KeycloakOpenidConnect
         """
-        import django_keycloak.services.realm
+        import django_keycloak.services.client
         return django_keycloak.services.client.get_openid_client(client=self)
 
     @cached_property
@@ -107,7 +107,7 @@ class Client(models.Model):
         """
         :rtype: keycloak.authz.KeycloakAuthz
         """
-        import django_keycloak.services.realm
+        import django_keycloak.services.client
         return django_keycloak.services.client.get_authz_api_client(
             client=self)
 

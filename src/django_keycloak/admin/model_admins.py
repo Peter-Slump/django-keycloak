@@ -1,4 +1,5 @@
 from django.contrib import admin, messages
+from requests.exceptions import HTTPError
 
 from django_keycloak.models import (
     Realm,
@@ -64,7 +65,27 @@ clear_client_tokens.short_description = 'Clear client tokens'
 
 def synchronize_permissions(modeladmin, request, queryset):
     for realm in queryset:
-        django_keycloak.services.permissions.synchronize(client=realm.client)
+        try:
+            django_keycloak.services.permissions.synchronize(
+                client=realm.client)
+        except HTTPError as e:
+            if e.response.status_code == 403:
+                modeladmin.message_user(
+                    request=request,
+                    message='Forbidden for {}. Does the client\'s service '
+                            'account has the "keycloak_client" role?'.format(
+                                realm.name
+                            ),
+                    level=messages.ERROR
+                )
+                return
+            else:
+                raise
+    modeladmin.message_user(
+        request=request,
+        message='Permissions synchronized',
+        level=messages.SUCCESS
+    )
 
 
 synchronize_permissions.short_description = 'Synchronize permissions'

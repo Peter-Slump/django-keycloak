@@ -2,7 +2,12 @@ import factory
 
 from django.contrib.auth import get_user_model
 
-from django_keycloak.models import Realm, KeycloakOpenIDProfile
+from django_keycloak.models import (
+    Client,
+    OpenIdConnectProfile,
+    Realm,
+    Server
+)
 
 
 class UserFactory(factory.DjangoModelFactory):
@@ -13,26 +18,47 @@ class UserFactory(factory.DjangoModelFactory):
     username = factory.Faker('user_name')
 
 
+class ServerFactory(factory.DjangoModelFactory):
+
+    class Meta(object):
+        model = Server
+
+    url = factory.Faker('url', schemes=['https'])
+
+
 class RealmFactory(factory.DjangoModelFactory):
 
     class Meta(object):
         model = Realm
 
-    server_url = factory.Faker('url', schemes=['https'])
+    server = factory.SubFactory(ServerFactory)
 
     name = factory.Faker('slug')
 
-    client_id = factory.Faker('slug')
-    client_secret = factory.Faker('uuid4')
+    _certs = ''
+    _well_known_oidc = '{}'
 
-    _well_known_oidc = ''
+    client = factory.RelatedFactory('django_keycloak.factories.ClientFactory',
+                                    'realm')
 
 
-class KeycloakOpenIDProfileFactory(factory.DjangoModelFactory):
+class OpenIdConnectProfileFactory(factory.DjangoModelFactory):
 
     class Meta(object):
-        model = KeycloakOpenIDProfile
+        model = OpenIdConnectProfile
 
     sub = factory.Faker('uuid4')
     realm = factory.SubFactory(RealmFactory)
     user = factory.SubFactory(UserFactory)
+
+
+class ClientFactory(factory.DjangoModelFactory):
+
+    class Meta(object):
+        model = Client
+
+    realm = factory.SubFactory(RealmFactory, client=None)
+    service_account = factory.SubFactory(UserFactory)
+
+    client_id = factory.Faker('slug')
+    secret = factory.Faker('uuid4')

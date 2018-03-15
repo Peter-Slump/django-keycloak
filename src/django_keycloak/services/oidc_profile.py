@@ -63,20 +63,20 @@ def _update_or_create(client, token_response, initiate_time):
         token=token_response['access_token'])
 
     with transaction.atomic():
-        oidc_profile, _ = OpenIdConnectProfile.objects.update_or_create(
-            sub=id_token_object['sub'],
-            defaults={
-                'realm': client.realm
-            }
-        )
-        get_user_model().objects.update_or_create(
+        user, _ = get_user_model().objects.update_or_create(
             username=id_token_object['sub'],
             defaults={
-                'oidc_profile': oidc_profile,
                 'email': userinfo.get('email', ''),
                 'first_name': userinfo.get('given_name', ''),
                 'last_name': userinfo.get('family_name', '')
+            }
+        )
 
+        oidc_profile, _ = OpenIdConnectProfile.objects.update_or_create(
+            sub=id_token_object['sub'],
+            defaults={
+                'realm': client.realm,
+                'user': user
             }
         )
 
@@ -121,13 +121,14 @@ def get_active_access_token(oidc_profile):
     """
     initiate_time = timezone.now()
 
-    if initiate_time > oidc_profile.refresh_expires_before:
+    if oidc_profile.refresh_expires_before is None \
+            or initiate_time > oidc_profile.refresh_expires_before:
         raise TokensExpired()
 
     if initiate_time > oidc_profile.expires_before:
         # Refresh token
-        token_response = oidc_profile.realm.openid_api_client.refresh_token(
-            refresh_token=oidc_profile.refresh_token)
+        token_response = oidc_profile.realm.client.openid_api_client\
+            .refresh_token(refresh_token=oidc_profile.refresh_token)
 
         oidc_profile = update_tokens(oidc_profile=oidc_profile,
                                      token_response=token_response,
@@ -150,7 +151,7 @@ def get_entitlement(oidc_profile):
 
     rpt = oidc_profile.realm.authz_api_client.entitlement(token=access_token)
 
-    rpt_decoded = oidc_profile.realm.openid_api_client.decode_token(
+    rpt_decoded = oidc_profile.realm.client.openid_api_client.decode_token(
         token=rpt['rpt'],
         key=oidc_profile.realm.certs,
         options={

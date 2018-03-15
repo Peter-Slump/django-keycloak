@@ -1,12 +1,12 @@
 import logging
-from datetime import timedelta
+
 from functools import partial
 
 from django.utils import timezone
 
 from django_keycloak.services.exceptions import TokensExpired
 
-import django_keycloak.services.user
+import django_keycloak.services.oidc_profile
 
 
 logger = logging.getLogger(__name__)
@@ -18,11 +18,11 @@ def get_keycloak_id(client):
     :param django_keycloak.models.Realm realm:
     :return:
     """
-    clients = client.realm.keycloak_admin.realms.by_name(
+    keycloak_clients = client.admin_api_client.realms.by_name(
         name=client.realm.name).clients.all()
-    for client in clients:
-        if client['clientId'] == client.client_id:
-            return client['id']
+    for keycloak_client in keycloak_clients:
+        if keycloak_client['clientId'] == client.client_id:
+            return keycloak_client['id']
 
     return None
 
@@ -59,7 +59,7 @@ def get_admin_client(client):
     :rtype: keycloak.admin.KeycloakAdmin
     """
     token = partial(get_access_token, client)
-    return client.admin_api_client.set_token(token=token)
+    return client.realm.realm_api_client.admin.set_token(token=token)
 
 
 def get_service_account_profile(client):
@@ -71,11 +71,11 @@ def get_service_account_profile(client):
     """
 
     if client.service_account:
-        return client.service_account
+        return client.service_account.oidc_profile
 
     token_response, initiate_time = get_new_access_token(client=client)
 
-    oidc_profile = django_keycloak.services.user._update_or_create(
+    oidc_profile = django_keycloak.services.oidc_profile._update_or_create(
         client=client,
         token_response=token_response,
         initiate_time=initiate_time)
@@ -93,7 +93,7 @@ def get_new_access_token(client):
     :param django_keycloak.models.Client client:
     :rtype: str
     """
-    scope = 'realm-management'
+    scope = 'realm-management openid'
 
     initiate_time = timezone.now()
     token_response = client.openid_api_client.client_credentials(scope=scope)
@@ -111,11 +111,11 @@ def get_access_token(client):
     oidc_profile = get_service_account_profile(client=client)
 
     try:
-        return django_keycloak.services.user.get_active_access_token(
+        return django_keycloak.services.oidc_profile.get_active_access_token(
             oidc_profile=oidc_profile)
     except TokensExpired:
         token_reponse, initiate_time = get_new_access_token(client=client)
-        oidc_profile = django_keycloak.services.user.update_tokens(
+        oidc_profile = django_keycloak.services.oidc_profile.update_tokens(
             oidc_profile=oidc_profile,
             token_response=token_reponse,
             initiate_time=initiate_time
