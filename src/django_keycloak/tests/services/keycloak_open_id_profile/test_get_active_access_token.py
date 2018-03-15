@@ -21,14 +21,15 @@ class ServicesKeycloakOpenIDProfileGetActiveAccessTokenTestCase(
             expires_before=datetime(2018, 3, 5, 1, 0, 0),
             refresh_token='refresh-token'
         )
-        self.oidc_profile.realm.keycloak_openid = mock.MagicMock(
+        self.oidc_profile.realm.openid_api_client = mock.MagicMock(
             spec_set=KeycloakOpenidConnect)
-        self.oidc_profile.realm.keycloak_openid.refresh_token.return_value = {
-            'access_token': 'new-access-token',
-            'expires_in': 600,
-            'refresh_token': 'new-refresh-token',
-            'refresh_expires_in': 3600
-        }
+        self.oidc_profile.realm.openid_api_client.refresh_token\
+            .return_value = {
+                'access_token': 'new-access-token',
+                'expires_in': 600,
+                'refresh_token': 'new-refresh-token',
+                'refresh_expires_in': 3600
+            }
 
     @freeze_time('2018-03-05 00:59:00')
     def test_not_expired(self):
@@ -41,7 +42,7 @@ class ServicesKeycloakOpenIDProfileGetActiveAccessTokenTestCase(
 
         self.assertEqual(access_token, 'access-token')
         self.assertFalse(
-            self.oidc_profile.realm.keycloak_openid.refresh_token.called
+            self.oidc_profile.realm.openid_api_client.refresh_token.called
         )
 
     @freeze_time('2018-03-05 01:01:00')
@@ -54,7 +55,7 @@ class ServicesKeycloakOpenIDProfileGetActiveAccessTokenTestCase(
             .get_active_access_token(oidc_profile=self.oidc_profile)
 
         self.assertEqual(access_token, 'new-access-token')
-        self.oidc_profile.realm.keycloak_openid.refresh_token\
+        self.oidc_profile.realm.openid_api_client.refresh_token\
             .assert_called_once_with(refresh_token='refresh-token')
 
         self.oidc_profile.refresh_from_db()

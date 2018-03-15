@@ -1,9 +1,21 @@
 from django.contrib import admin, messages
 
-from django_keycloak.models import Realm
-
+from django_keycloak.models import (
+    Realm,
+    Server,
+    Client,
+    OpenIdConnectProfile)
 import django_keycloak.services.permissions
 import django_keycloak.services.realm
+
+
+class ServerAdmin(admin.ModelAdmin):
+
+    fieldsets = (
+        ('Location', {
+            'fields': ('url', 'internal_url')
+        }),
+    )
 
 
 def refresh_open_id_connect_well_known(modeladmin, request, queryset):
@@ -34,7 +46,7 @@ refresh_certs.short_description = 'Refresh Certificates'
 
 
 def clear_client_tokens(modeladmin, request, queryset):
-    queryset.update(
+    OpenIdConnectProfile.objects.filter(realm__in=queryset).update(
         access_token=None,
         expires_before=None,
         refresh_token=None,
@@ -52,19 +64,29 @@ clear_client_tokens.short_description = 'Clear client tokens'
 
 def synchronize_permissions(modeladmin, request, queryset):
     for realm in queryset:
-        django_keycloak.services.permissions.synchronize(realm=realm)
+        django_keycloak.services.permissions.synchronize(client=realm.client)
 
 
 synchronize_permissions.short_description = 'Synchronize permissions'
 
 
+class ClientAdmin(admin.TabularInline):
+
+    model = Client
+
+    fields = ('client_id', 'secret')
+
+
 class RealmAdmin(admin.ModelAdmin):
+
+    inlines = [ClientAdmin]
 
     actions = [
         refresh_open_id_connect_well_known,
         refresh_certs,
         clear_client_tokens,
         synchronize_permissions
+
     ]
 
     fieldsets = (
@@ -72,14 +94,13 @@ class RealmAdmin(admin.ModelAdmin):
             'fields': ('name',)
         }),
         ('Location', {
-            'fields': ('server_url', 'internal_server_url', '_well_known_oidc')
-        }),
-        ('Credentials', {
-            'fields': ('client_id', 'client_secret')
+            'fields': ('server', '_well_known_oidc',)
         })
+
     )
 
     readonly_fields = ('_well_known_oidc',)
 
 
+admin.site.register(Server, ServerAdmin)
 admin.site.register(Realm, RealmAdmin)

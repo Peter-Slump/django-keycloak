@@ -26,10 +26,11 @@ class ServicesKeycloakOpenIDProfileGetActiveAccessTokenTestCase(
             expires_before=datetime(2018, 3, 5, 1, 0, 0),
             refresh_token='refresh-token'
         )
-        self.oidc_profile.realm.keycloak_openid = mock.MagicMock(
+        self.oidc_profile.realm.openid_api_client = mock.MagicMock(
             spec_set=KeycloakOpenidConnect)
-        self.oidc_profile.realm.authz = mock.MagicMock(spec_set=KeycloakAuthz)
-        self.oidc_profile.realm.authz.entitlement.return_value = {
+        self.oidc_profile.realm.authz_api_client = mock.MagicMock(
+            spec_set=KeycloakAuthz)
+        self.oidc_profile.realm.authz_api_client.entitlement.return_value = {
             'rpt': 'RPT_VALUE'
         }
         self.oidc_profile.realm.certs = {'cert': 'cert-value'}
@@ -38,10 +39,11 @@ class ServicesKeycloakOpenIDProfileGetActiveAccessTokenTestCase(
         django_keycloak.services.keycloak_open_id_profile.get_entitlement(
             oidc_profile=self.oidc_profile
         )
-        self.oidc_profile.realm.authz.entitlement.assert_called_once_with(
-            token=self.mocked_get_active_access_token.return_value
-        )
-        self.oidc_profile.realm.keycloak_openid.decode_token\
+        self.oidc_profile.realm.authz_api_client.entitlement\
+            .assert_called_once_with(
+                token=self.mocked_get_active_access_token.return_value
+            )
+        self.oidc_profile.realm.openid_api_client.decode_token\
             .assert_called_once_with(
                 token='RPT_VALUE',
                 key=self.oidc_profile.realm.certs,
