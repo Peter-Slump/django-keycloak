@@ -37,7 +37,7 @@ class Login(RedirectView):
 
         self.request.session['oidc_state'] = str(nonce.state)
 
-        authorization_url = self.request.realm.keycloak_openid\
+        authorization_url = self.request.realm.openid_api_client\
             .authorization_url(
                 redirect_uri=nonce.redirect_uri,
                 scope='openid given_name family_name email uma_authorization',
@@ -83,7 +83,7 @@ class Logout(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         if hasattr(self.request.user, 'oidc_profile'):
-            self.request.realm.keycloak_openid.logout(
+            self.request.realm.openid_api_client.logout(
                 self.request.user.oidc_profile.refresh_token
             )
         logout(self.request)

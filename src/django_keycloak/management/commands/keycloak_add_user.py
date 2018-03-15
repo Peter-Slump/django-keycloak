@@ -37,4 +37,4 @@ class Command(BaseCommand):
         user = options['user']
         realm = options['realm']
 
-        django_keycloak.services.users.add_user(realm=realm, user=user)
+        django_keycloak.services.users.add_user(client=realm.client, user=user)
