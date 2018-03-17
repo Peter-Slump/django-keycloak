@@ -47,6 +47,18 @@ backend and middleware. Point to the correct login page.
 
     LOGIN_URL = 'keycloak_login'
 
+Server configuration
+====================
+
+First you have to add your Keycloak server. You can do this in the Django Admin.
+
+.. image:: add-server.png
+
+.. note:: When your application access the Keycloak server using a different url
+          than the public one you can configure this URL as "internal url". Django
+          Keycloak will use that url for all direct communication but uses the standard
+          server url to redirect users for authentication.
+
 Realm configuration
 ===================
 
@@ -61,11 +73,6 @@ in Keycloak you can add these in the Django admin.
           selects the first realm available in the database.
 
 .. image:: add-realm.png
-
-.. note:: When your application access the Keycloak server using a different url
-than the public one you can configure this URL as "internal server url". Django
-Keycloak will use that url for all direc communication but uses the standard
-server url to redirect users for authentication.
 
 After you have added the realm please make sure to run te following actions:
 

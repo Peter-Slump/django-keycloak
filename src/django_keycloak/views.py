@@ -37,17 +37,17 @@ class Login(RedirectView):
 
         self.request.session['oidc_state'] = str(nonce.state)
 
-        authorization_url = self.request.realm.openid_api_client\
+        authorization_url = self.request.realm.client.openid_api_client\
             .authorization_url(
                 redirect_uri=nonce.redirect_uri,
                 scope='openid given_name family_name email uma_authorization',
                 state=str(nonce.state)
             )
 
-        if self.request.realm.internal_server_url:
+        if self.request.realm.server.internal_url:
             authorization_url = authorization_url.replace(
-                self.request.realm.internal_server_url,
-                self.request.realm.server_url,
+                self.request.realm.server.internal_url,
+                self.request.realm.server.url,
                 1
             )
 
@@ -83,7 +83,7 @@ class Logout(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         if hasattr(self.request.user, 'oidc_profile'):
-            self.request.realm.openid_api_client.logout(
+            self.request.realm.client.openid_api_client.logout(
                 self.request.user.oidc_profile.refresh_token
             )
         logout(self.request)

@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ImproperlyConfigured
 from django.utils import timezone
 
-import django_keycloak.services.user
+import django_keycloak.services.oidc_profile
 
 
 logger = logging.getLogger(__name__)
@@ -33,7 +33,7 @@ class KeycloakAuthorizationCodeBackend(object):
                 'Add BaseKeycloakMiddleware to middlewares')
 
         keycloak_openid_profile = django_keycloak.services\
-            .user.update_or_create_from_code(
+            .oidc_profile.update_or_create_from_code(
                 client=request.realm.client,
                 code=code,
                 redirect_uri=redirect_uri
@@ -53,14 +53,14 @@ class KeycloakAuthorizationCodeBackend(object):
         if not hasattr(user_obj, 'oidc_profile'):
             return set()
 
-        rpt_decoded = django_keycloak.services.user\
+        rpt_decoded = django_keycloak.services.oidc_profile\
             .get_entitlement(oidc_profile=user_obj.oidc_profile)
 
         logger.debug(rpt_decoded)
 
         return [
             role for role in rpt_decoded['resource_access'].get(
-                user_obj.oidc_profile.realm.client_id,
+                user_obj.oidc_profile.realm.client.client_id,
                 {'roles': []}
             )['roles']
         ]
