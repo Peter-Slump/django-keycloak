@@ -55,3 +55,17 @@ def refresh_well_known_oidc(realm):
     realm.well_known_oidc = openid_api_client.well_known.contents
     realm.save(update_fields=['_well_known_oidc'])
     return realm
+
+
+def get_issuer(realm):
+    """
+    Get correct issuer to validate the JWT against.
+
+    :param django_keycloak.models.Realm realm:
+    :return: issuer
+    :rtype: str
+    """
+    issuer = realm.well_known_oidc['issuer']
+    if realm.server.internal_url:
+        return issuer.replace(realm.server.internal_url, realm.server.url, 1)
+    return issuer

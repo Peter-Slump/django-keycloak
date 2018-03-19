@@ -69,3 +69,35 @@ class KeycloakAuthorizationCodeBackend(object):
         if not user_obj.is_active:
             return False
         return perm in self.get_all_permissions(user_obj, obj)
+
+
+class KeycloakBearerAuthorizationBackend(object):
+
+    def get_user(self, user_id):
+        UserModel = get_user_model()
+
+        try:
+            user = UserModel.objects.select_related('oidc_profile__realm').get(
+                pk=user_id)
+        except UserModel.DoesNotExist:
+            return None
+
+        if user.oidc_profile.refresh_expires_before > timezone.now():
+            return user
+
+        return None
+
+    def authenticate(self, request, code, redirect_uri):
+
+        if not hasattr(request, 'realm'):
+            raise ImproperlyConfigured(
+                'Add BaseKeycloakMiddleware to middlewares')
+
+        keycloak_openid_profile = django_keycloak.services\
+            .oidc_profile.update_or_create_from_code(
+                client=request.realm.client,
+                code=code,
+                redirect_uri=redirect_uri
+            )
+
+        return keycloak_openid_profile.user

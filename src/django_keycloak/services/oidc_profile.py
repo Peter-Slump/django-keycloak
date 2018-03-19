@@ -9,7 +9,48 @@ from django.utils import timezone
 from django_keycloak.models import OpenIdConnectProfile
 from django_keycloak.services.exceptions import TokensExpired
 
+import django_keycloak.services.realm
+
 logger = logging.getLogger(__name__)
+
+
+def get_or_create_from_id_token(client, id_token):
+    """
+    Get or create OpenID Connect profile from given id_token.
+
+    :param django_keycloak.models.Client client:
+    :param str id_token:
+    :rtype: django_keycloak.models.OpenIdConnectProfile
+    """
+    issuer = django_keycloak.services.realm.get_issuer(client.realm)
+
+    id_token_object = client.openid_api_client.decode_token(
+        token=id_token,
+        key=client.realm.certs,
+        algorithms=client.openid_api_client.well_known[
+            'id_token_signing_alg_values_supported'],
+        issuer=issuer
+    )
+
+    with transaction.atomic():
+        user, _ = get_user_model().objects.update_or_create(
+            username=id_token_object['sub'],
+            defaults={
+                'email': id_token_object.get('email', ''),
+                'first_name': id_token_object.get('given_name', ''),
+                'last_name': id_token_object.get('family_name', '')
+            }
+        )
+
+        oidc_profile, _ = OpenIdConnectProfile.objects.update_or_create(
+            sub=id_token_object['sub'],
+            defaults={
+                'realm': client.realm,
+                'user': user
+            }
+        )
+
+    return oidc_profile
 
 
 def update_or_create_from_code(code, client, redirect_uri):
@@ -22,7 +63,7 @@ def update_or_create_from_code(code, client, redirect_uri):
     :param django_keycloak.models.Client client:
     :param str code: authentication code
     :param str redirect_uri
-    :rtype: django_keycloak.models.KeycloakOpenIDProfile
+    :rtype: django_keycloak.models.OpenIdConnectProfile
     """
 
     # Define "initiate_time" before getting the access token to calculate
@@ -52,11 +93,14 @@ def _update_or_create(client, token_response, initiate_time):
     :param datetime.datetime initiate_time:
     :rtype: django_keycloak.models.OpenIdConnectProfile
     """
+    issuer = django_keycloak.services.realm.get_issuer(client.realm)
+
     id_token_object = client.openid_api_client.decode_token(
         token=token_response['id_token'],
         key=client.realm.certs,
         algorithms=client.openid_api_client.well_known[
-            'id_token_signing_alg_values_supported']
+            'id_token_signing_alg_values_supported'],
+        issuer=issuer
     )
 
     userinfo = client.openid_api_client.userinfo(
