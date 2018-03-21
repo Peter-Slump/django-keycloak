@@ -116,7 +116,7 @@ def get_access_token(client):
     except TokensExpired:
         token_reponse, initiate_time = get_new_access_token(client=client)
         oidc_profile = django_keycloak.services.oidc_profile.update_tokens(
-            oidc_profile=oidc_profile,
+            token_model=oidc_profile,
             token_response=token_reponse,
             initiate_time=initiate_time
         )

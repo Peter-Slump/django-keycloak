@@ -130,13 +130,19 @@ class Role(models.Model):
         )
 
 
-class OpenIdConnectProfile(models.Model):
+class TokenModelAbstract(models.Model):
 
     access_token = models.TextField(null=True)
     expires_before = models.DateTimeField(null=True)
 
     refresh_token = models.TextField(null=True)
     refresh_expires_before = models.DateTimeField(null=True)
+
+    class Meta(object):
+        abstract = True
+
+
+class OpenIdConnectProfile(TokenModelAbstract):
 
     sub = models.CharField(max_length=255, unique=True)
     user = models.OneToOneField(settings.AUTH_USER_MODEL,

@@ -86,5 +86,3 @@ class KeycloakBearerAuthenticationMiddleware(BaseKeycloakMiddleware):
                     'error_description': 'The access token is malformed'
                 }
             )
-
-

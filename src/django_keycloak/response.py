@@ -14,7 +14,8 @@ class HttpResponseNotAuthorized(HttpResponse):
             [
                '{}="{}"'.format(key, value)
                for key, value in attributes.items()
-           ]
+            ]
         )
 
-        self['WWW-Authenticate'] = '{} {}'.format(authorization_method, attributes_str)
+        self['WWW-Authenticate'] = '{} {}'.format(authorization_method,
+                                                  attributes_str)

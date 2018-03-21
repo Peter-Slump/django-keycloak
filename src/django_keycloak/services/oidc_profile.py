@@ -124,16 +124,16 @@ def _update_or_create(client, token_response, initiate_time):
             }
         )
 
-    return update_tokens(oidc_profile=oidc_profile,
+    return update_tokens(token_model=oidc_profile,
                          token_response=token_response,
                          initiate_time=initiate_time)
 
 
-def update_tokens(oidc_profile, token_response, initiate_time):
+def update_tokens(token_model, token_response, initiate_time):
     """
     Update tokens on the OpenID Connect profile
 
-    :param django_keycloak.models.OpenIdConnectProfile oidc_profile:
+    :param django_keycloak.models.TokenModelAbstract token_model:
     :param dict token_response: response from OIDC token API end-point
     :param datetime.datetime initiate_time: timestamp before the token request
     :rtype: django_keycloak.models.OpenIdConnectProfile
@@ -143,16 +143,16 @@ def update_tokens(oidc_profile, token_response, initiate_time):
     refresh_expires_before = initiate_time + timedelta(
         seconds=token_response['refresh_expires_in'])
 
-    oidc_profile.access_token = token_response['access_token']
-    oidc_profile.expires_before = expires_before
-    oidc_profile.refresh_token = token_response['refresh_token']
-    oidc_profile.refresh_expires_before = refresh_expires_before
+    token_model.access_token = token_response['access_token']
+    token_model.expires_before = expires_before
+    token_model.refresh_token = token_response['refresh_token']
+    token_model.refresh_expires_before = refresh_expires_before
 
-    oidc_profile.save(update_fields=['access_token',
-                                     'expires_before',
-                                     'refresh_token',
-                                     'refresh_expires_before'])
-    return oidc_profile
+    token_model.save(update_fields=['access_token',
+                                    'expires_before',
+                                    'refresh_token',
+                                    'refresh_expires_before'])
+    return token_model
 
 
 def get_active_access_token(oidc_profile):
@@ -174,7 +174,7 @@ def get_active_access_token(oidc_profile):
         token_response = oidc_profile.realm.client.openid_api_client\
             .refresh_token(refresh_token=oidc_profile.refresh_token)
 
-        oidc_profile = update_tokens(oidc_profile=oidc_profile,
+        oidc_profile = update_tokens(token_model=oidc_profile,
                                      token_response=token_response,
                                      initiate_time=initiate_time)
 
