@@ -18,7 +18,10 @@ class ServicesKeycloakOpenIDProfileUpdateOrCreateTestCase(MockTestCaseMixin,
                                                           TestCase):
 
     def setUp(self):
-        self.client = ClientFactory(realm___certs='{}')
+        self.client = ClientFactory(
+            realm___certs='{}',
+            realm___well_known_oidc='{"issuer": "https://issuer"}'
+        )
         self.client.openid_api_client = mock.MagicMock(
             spec_set=KeycloakOpenidConnect)
         self.client.openid_api_client.authorization_code.return_value = {
@@ -32,7 +35,7 @@ class ServicesKeycloakOpenIDProfileUpdateOrCreateTestCase(MockTestCaseMixin,
             'id_token_signing_alg_values_supported': ['signing-alg']
         }
         self.client.openid_api_client.decode_token.return_value = {
-            'sub': 'some-sub'
+            'sub': 'some-sub',
         }
         self.client.openid_api_client.userinfo.return_value = {
             'email': 'test@example.com',
@@ -53,7 +56,8 @@ class ServicesKeycloakOpenIDProfileUpdateOrCreateTestCase(MockTestCaseMixin,
         self.client.openid_api_client.decode_token.assert_called_once_with(
             token='id-token',
             key=dict(),
-            algorithms=['signing-alg']
+            algorithms=['signing-alg'],
+            issuer='https://issuer'
         )
 
         profile = OpenIdConnectProfile.objects.get(sub='some-sub')
@@ -102,7 +106,8 @@ class ServicesKeycloakOpenIDProfileUpdateOrCreateTestCase(MockTestCaseMixin,
         self.client.openid_api_client.decode_token.assert_called_once_with(
             token='id-token',
             key=dict(),
-            algorithms=['signing-alg']
+            algorithms=['signing-alg'],
+            issuer='https://issuer'
         )
 
         profile.refresh_from_db()
