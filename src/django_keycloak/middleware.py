@@ -31,8 +31,8 @@ class KeycloakStatelessBearerAuthenticationMiddleware(BaseKeycloakMiddleware):
 
     def process_request(self, request):
         """
-        Forces authentication on all requests except the URL's configured in the
-        exempt setting.
+        Forces authentication on all requests except the URL's configured in
+        the exempt setting.
         """
         super(KeycloakStatelessBearerAuthenticationMiddleware, self)\
             .process_request(request=request)
