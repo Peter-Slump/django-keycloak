@@ -59,7 +59,8 @@ def refresh_well_known_oidc(realm):
 
 def get_issuer(realm):
     """
-    Get correct issuer to validate the JWT against.
+    Get correct issuer to validate the JWT against. If an internal URL is
+    configured for the server it will be replaced with the public one.
 
     :param django_keycloak.models.Realm realm:
     :return: issuer
