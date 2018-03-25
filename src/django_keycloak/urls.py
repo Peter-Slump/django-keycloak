@@ -21,5 +21,7 @@ urlpatterns = [
     url(r'^login$', views.Login.as_view(), name='keycloak_login'),
     url(r'^login-complete$', views.LoginComplete.as_view(),
         name='login-complete'),
-    url(r'^logout$', views.Logout.as_view(), name='keycloak_logout')
+    url(r'^logout$', views.Logout.as_view(), name='keycloak_logout'),
+    url(r'^session-iframe', views.SessionIframe.as_view(),
+        name='keycloak_session_iframe')
 ]

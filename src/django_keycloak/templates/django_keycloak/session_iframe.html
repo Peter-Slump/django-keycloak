@@ -1,0 +1,26 @@
+<html>
+<head>
+<script type="text/javascript">
+    function check_session() {
+        var win = window.parent.document.getElementById("op").contentWindow;
+        win.postMessage( "{{ client_id }} {{ session_state }}", "{{ op_location }}");
+    }
+
+    function receiveMessage(e) {
+        if (e.origin !== "{{ identity_server }}" ) {return;}
+        stat = e.data;
+        console.log(stat);
+
+        <!--if stat == "changed" then take the actions below...-->
+    }
+
+    window.addEventListener("message", receiveMessage, false);
+
+    (function() {
+        check_session();
+        setInterval("check_session()", 3 * 1000);
+    })();
+</script>
+</head>
+<body></body>
+</html>
