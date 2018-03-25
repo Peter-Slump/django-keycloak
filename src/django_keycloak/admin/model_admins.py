@@ -5,7 +5,7 @@ from django_keycloak.models import (
     Realm,
     Server,
     Client,
-    OpenIdConnectProfile)
+    OpenIdConnectProfile, RemoteClient)
 import django_keycloak.services.permissions
 import django_keycloak.services.realm
 
@@ -98,9 +98,18 @@ class ClientAdmin(admin.TabularInline):
     fields = ('client_id', 'secret')
 
 
+class RemoteClientAdmin(admin.TabularInline):
+
+    model = RemoteClient
+
+    extra = 1
+
+    fields = ('name',)
+
+
 class RealmAdmin(admin.ModelAdmin):
 
-    inlines = [ClientAdmin]
+    inlines = [ClientAdmin, RemoteClientAdmin]
 
     actions = [
         refresh_open_id_connect_well_known,

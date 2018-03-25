@@ -130,13 +130,19 @@ class Role(models.Model):
         )
 
 
-class OpenIdConnectProfile(models.Model):
+class TokenModelAbstract(models.Model):
 
     access_token = models.TextField(null=True)
     expires_before = models.DateTimeField(null=True)
 
     refresh_token = models.TextField(null=True)
     refresh_expires_before = models.DateTimeField(null=True)
+
+    class Meta(object):
+        abstract = True
+
+
+class OpenIdConnectProfile(TokenModelAbstract):
 
     sub = models.CharField(max_length=255, unique=True)
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
@@ -153,3 +159,25 @@ class Nonce(models.Model):
     state = models.UUIDField(default=uuid.uuid4, unique=True)
     redirect_uri = models.CharField(max_length=255)
     next_path = models.CharField(max_length=255, null=True)
+
+
+class ExchangedToken(TokenModelAbstract):
+
+    oidc_profile = models.ForeignKey('django_keycloak.OpenIdConnectProfile',
+                                     on_delete=models.CASCADE)
+    remote_client = models.ForeignKey('django_keycloak.RemoteClient',
+                                      related_name='exchanged_tokens',
+                                      on_delete=models.CASCADE)
+
+    class Meta(object):
+        unique_together = (
+            ('oidc_profile', 'remote_client'),
+        )
+
+
+class RemoteClient(models.Model):
+
+    name = models.CharField(max_length=255)
+    realm = models.ForeignKey('django_keycloak.Realm',
+                              related_name='remote_clients',
+                              on_delete=models.CASCADE)
