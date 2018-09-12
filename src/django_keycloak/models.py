@@ -5,6 +5,7 @@ import uuid
 from django.contrib.auth.models import Permission
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 from django.utils.functional import cached_property
 
 logger = logging.getLogger(__name__)
@@ -141,6 +142,13 @@ class TokenModelAbstract(models.Model):
     class Meta(object):
         abstract = True
 
+    @property
+    def is_active(self):
+        if not self.access_token or not self.expires_before:
+            return False
+
+        return self.expires_before > timezone.now()
+
 
 class OpenIdConnectProfile(TokenModelAbstract):
 
@@ -153,6 +161,20 @@ class OpenIdConnectProfile(TokenModelAbstract):
                               related_name='openid_profiles',
                               on_delete=models.CASCADE)
 
+    @property
+    def jwt(self):
+        """
+        :rtype: dict
+        """
+        if not self.is_active:
+            return None
+        client = self.realm.client
+        return client.openid_api_client.decode_token(
+            token=self.access_token,
+            key=client.realm.certs,
+            algorithms=client.openid_api_client.well_known[
+                'id_token_signing_alg_values_supported']
+        )
 
 class Nonce(models.Model):
 

@@ -1,26 +1,50 @@
 <html>
-<head>
-<script type="text/javascript">
-    function check_session() {
-        var win = window.parent.document.getElementById("op").contentWindow;
-        win.postMessage( "{{ client_id }} {{ session_state }}", "{{ op_location }}");
-    }
+<head></head>
+<body>
+    <iframe id="op" src="{{ op_location }}" style="display: none;"></iframe>
+    <script type="text/javascript">
+        var op_iframe = document.getElementById("op");
 
-    function receiveMessage(e) {
-        if (e.origin !== "{{ identity_server }}" ) {return;}
-        stat = e.data;
-        console.log(stat);
+        function check_session() {
+            var client_id = "{{ client_id }}";
+            var session_state = getCookieValue("{{ cookie_name }}");
 
-        <!--if stat == "changed" then take the actions below...-->
-    }
+            op_iframe.contentWindow.postMessage(
+                client_id + " " + session_state,
+                "{{ op_location }}"
+            );
+        }
 
-    window.addEventListener("message", receiveMessage, false);
+        function getCookieValue(cookieName) {
+            var name = cookieName + "=";
+            var cookies = document.cookie.split(';');
+            if (!cookies) {
+                return null;
+            }
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                if (cookie.indexOf(name) == 0) {
+                    return cookie.substring(name.length, cookie.length);
+                }
+            }
+            return null;
+        }
 
-    (function() {
-        check_session();
-        setInterval("check_session()", 3 * 1000);
-    })();
-</script>
-</head>
-<body></body>
+        function receiveMessage(e) {
+            if (e.origin !== "{{ identity_server }}" ) {return;}
+            stat = e.data;
+
+            if( stat == "changed" ) {
+                window.parent.location.replace('{% url 'keycloak_logout' %}')
+            }
+        }
+
+        window.addEventListener("message", receiveMessage, false);
+
+        op_iframe.onload = function() {
+            check_session();
+            setInterval("check_session()", 3 * 1000);
+        }
+    </script>
+</body>
 </html>

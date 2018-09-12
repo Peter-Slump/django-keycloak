@@ -20,7 +20,7 @@ from django_keycloak import views
 urlpatterns = [
     url(r'^login$', views.Login.as_view(), name='keycloak_login'),
     url(r'^login-complete$', views.LoginComplete.as_view(),
-        name='login-complete'),
+        name='keycloak_login_complete'),
     url(r'^logout$', views.Logout.as_view(), name='keycloak_logout'),
     url(r'^session-iframe', views.SessionIframe.as_view(),
         name='keycloak_session_iframe')

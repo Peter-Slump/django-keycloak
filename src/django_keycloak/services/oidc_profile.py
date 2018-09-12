@@ -206,3 +206,21 @@ def get_entitlement(oidc_profile):
             'aud': True
         })
     return rpt_decoded
+
+
+def get_decoded_jwt(oidc_profile):
+    """
+    :param django_keycloak.models.KeycloakOpenIDProfile oidc_profile:
+    :rtype dict
+    """
+
+    client = oidc_profile.realm.client
+
+    active_access_token = get_active_access_token(oidc_profile=oidc_profile)
+
+    return client.openid_api_client.decode_token(
+        token=active_access_token,
+        key=client.realm.certs,
+        algorithms=client.openid_api_client.well_known[
+            'id_token_signing_alg_values_supported']
+    )
