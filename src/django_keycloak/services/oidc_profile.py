@@ -33,10 +33,11 @@ def get_or_create_from_id_token(client, id_token):
     )
 
     with transaction.atomic():
-        user, _ = get_user_model().objects.update_or_create(
+        UserModel = get_user_model()
+        user, _ = UserModel.objects.update_or_create(
             username=id_token_object['sub'],
             defaults={
-                'email': id_token_object.get('email', ''),
+                UserModel.get_email_field_name(): id_token_object.get('email', ''),
                 'first_name': id_token_object.get('given_name', ''),
                 'last_name': id_token_object.get('family_name', '')
             }
@@ -107,10 +108,11 @@ def _update_or_create(client, token_response, initiate_time):
         token=token_response['access_token'])
 
     with transaction.atomic():
-        user, _ = get_user_model().objects.update_or_create(
+        UserModel = get_user_model()
+        user, _ = UserModel.objects.update_or_create(
             username=id_token_object['sub'],
             defaults={
-                'email': userinfo.get('email', ''),
+                UserModel.get_email_field_name(): userinfo.get('email', ''),
                 'first_name': userinfo.get('given_name', ''),
                 'last_name': userinfo.get('family_name', '')
             }
