@@ -70,4 +70,9 @@ Release Notes
 =============
 
 **unreleased**
-**v0.1.1-dev**
+
+* Correctly extract email field name on UserModel (thanks to @swist)
+* Add support for Oauth2 Token Exchange to exchange tokens with remote clients.
+  Handy when using multiple applications with different clients which have to
+  communicate with each other.
+* Support for session iframe
