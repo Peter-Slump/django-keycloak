@@ -52,3 +52,21 @@ Run the container
 
 Go in the browser to http://localhost:8050 and view the documentation which get
 refreshed and updated on every update in the documentation source.
+
+--------------
+Create release
+--------------
+
+.. code:: bash
+
+    $ git checkout master
+    $ git pull
+    $ bumpversion release
+    $ make deploy-pypi
+    $ bumpversion --no-tag patch
+    $ git push origin master --tags
+
+Release Notes
+=============
+
+**unreleased**
