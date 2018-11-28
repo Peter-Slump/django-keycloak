@@ -31,4 +31,3 @@ def add_user(client, user):
         email=user.email,
         enabled=user.is_active
     )
-

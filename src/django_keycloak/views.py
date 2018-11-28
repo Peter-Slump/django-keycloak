@@ -25,8 +25,6 @@ from django.views.generic.base import (
 
 from django_keycloak.models import Nonce
 
-import django_keycloak.services.oidc_profile
-
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +61,7 @@ class Login(RedirectView):
 
 class LoginComplete(RedirectView):
 
-   def get(self, *args, **kwargs):
+    def get(self, *args, **kwargs):
         request = self.request
 
         if 'error' in request.GET:

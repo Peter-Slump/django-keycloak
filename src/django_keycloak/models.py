@@ -176,6 +176,7 @@ class OpenIdConnectProfile(TokenModelAbstract):
                 'id_token_signing_alg_values_supported']
         )
 
+
 class Nonce(models.Model):
 
     state = models.UUIDField(default=uuid.uuid4, unique=True)
