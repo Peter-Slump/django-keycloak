@@ -17,6 +17,8 @@ def get_realm(request):
 
 class BaseKeycloakMiddleware(MiddlewareMixin):
 
+    set_session_state_cookie = True
+
     def process_request(self, request):
         """
         Adds Realm to request.
@@ -24,9 +26,40 @@ class BaseKeycloakMiddleware(MiddlewareMixin):
         """
         request.realm = SimpleLazyObject(lambda: get_realm(request))
 
+    def process_response(self, request, response):
+
+        if self.set_session_state_cookie:
+            return self.set_session_state_cookie_(request, response)
+
+        return response
+
+    def set_session_state_cookie_(self, request, response):
+
+        if not request.user.is_authenticated \
+                or not hasattr(request.user, 'oidc_profile'):
+            return response
+
+        jwt = request.user.oidc_profile.jwt
+        if not jwt:
+            return response
+
+        cookie_name = getattr(settings, 'KEYCLOAK_SESSION_STATE_COOKIE_NAME',
+                              'session_state')
+
+        # Set a browser readable cookie which expires when the refresh token
+        # expires.
+        response.set_cookie(
+            cookie_name, value=jwt['session_state'],
+            expires=request.user.oidc_profile.refresh_expires_before,
+            httponly=False
+        )
+
+        return response
+
 
 class KeycloakStatelessBearerAuthenticationMiddleware(BaseKeycloakMiddleware):
 
+    set_session_state_cookie = False
     header_key = "HTTP_AUTHORIZATION"
 
     def process_request(self, request):
