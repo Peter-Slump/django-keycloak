@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='KeycloakOpenIDProfile',
+            name='KeycloakOpenIDProfile' if settings.AUTH_USER_MODEL else 'KeycloakRemoteUserOpenIDProfile',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True,
                                         serialize=False, verbose_name='ID')),
@@ -94,15 +94,21 @@ class Migration(migrations.Migration):
                 to='django_keycloak.Realm'
                 ),
         ),
-        migrations.AddField(
-            model_name='keycloakopenidprofile',
-            name='user',
-            field=models.OneToOneField(
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name='oidc_profile', to=settings.AUTH_USER_MODEL),
-        ),
         migrations.AlterUniqueTogether(
             name='role',
             unique_together={('realm', 'permission')},
         ),
     ]
+
+    if settings.AUTH_USER_MODEL:
+        # Only add oidc_profile to user if AUTH_USER_MODEL is set,
+        # Otherwise we will assume that no user model is stored in the application
+        operations.append(
+            migrations.AddField(
+                model_name='keycloakopenidprofile',
+                name='user',
+                field=models.OneToOneField(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='oidc_profile', to=settings.AUTH_USER_MODEL),
+            )
+        )

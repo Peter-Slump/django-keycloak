@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 
 from django_keycloak.models import KeycloakOpenIDProfile
+from django_keycloak.stateless_user import KeycloakRemoteUser
 
 
 logger = logging.getLogger(__name__)
@@ -56,8 +57,6 @@ def update_or_create(realm, code, redirect_uri):
         logger.debug('KeycloakOpenIDProfile found, sub %s' %
                      id_token_object['sub'])
 
-
-        # TODO: Change this to not depend on keycloak_profile.user since we want a stateless user object
         user = keycloak_profile.user
         user.email = userinfo.get('email', '')
         user.first_name = userinfo.get('given_name', '')
@@ -69,7 +68,6 @@ def update_or_create(realm, code, redirect_uri):
         logger.debug("KeycloakOpenIDProfile for sub %s not found, so it'll be "
                      "created" % id_token_object['sub'])
 
-    # TODO: Change this since no 'model' is being used for the user
     UserModel = get_user_model()
 
     try:
@@ -79,7 +77,6 @@ def update_or_create(realm, code, redirect_uri):
         user.username = id_token_object['sub']
         user.set_unusable_password()
 
-    # TODO: We already fill user details based on the userinfo, so we can skip this from the
     user.email = userinfo.get('email', '')
     user.first_name = userinfo.get('given_name', '')
     user.last_name = userinfo.get('family_name', '')
@@ -87,7 +84,6 @@ def update_or_create(realm, code, redirect_uri):
 
     return realm.openid_profiles.create(
         sub=id_token_object['sub'],
-        user=user,
         access_token=response_dict['access_token'],
         expires_before=expires_before,
         refresh_token=response_dict['refresh_token'],
@@ -148,3 +144,54 @@ def get_entitlement(oidc_profile):
         })
     logger.debug('get_keycloak_permissions %s', rpt_decoded)
     return rpt_decoded
+
+
+def get_user_from_user_info(realm, code, redirect_uri):
+    """
+
+    :param django_keycloak.models.Realm realm:
+    :param str code: authentication code
+    :rtype: django_keycloak.models.KeycloakOpenIDProfile
+    """
+
+    now = timezone.now()
+    response_dict = realm.keycloak_openid.authorization_code(
+        code=code, redirect_uri=redirect_uri)
+
+    id_token_object = realm.keycloak_openid.decode_token(
+        token=response_dict['id_token'],
+        key=realm.certs,
+        algorithms=realm.keycloak_openid.well_known[
+            'id_token_signing_alg_values_supported']
+    )
+
+    expires_before = now + timedelta(seconds=response_dict['expires_in'])
+    refresh_expires_before = now + timedelta(
+        seconds=response_dict['refresh_expires_in'])
+
+    keycloak_profile = realm.openid_profiles.get_or_create(
+        sub=id_token_object['sub']
+    )
+
+    # Updating with new tokens
+    keycloak_profile.access_token = response_dict['access_token']
+    keycloak_profile.expires_before = expires_before
+    keycloak_profile.refresh_token = response_dict['refresh_token']
+    keycloak_profile.refresh_expires_before = refresh_expires_before
+    keycloak_profile.save(update_fields=['access_token', 'expires_before',
+                                         'refresh_token',
+                                         'refresh_expires_before'])
+
+    userinfo = realm.keycloak_openid.userinfo(
+        token=response_dict['access_token']
+    )
+
+    user = KeycloakRemoteUser()
+    user.username = userinfo['sub']
+    user.email = userinfo.get('email', '')
+    user.first_name = userinfo.get('given_name', '')
+    user.last_name = userinfo.get('family_name', '')
+    user.oidc_profile = keycloak_profile
+
+    return user
+

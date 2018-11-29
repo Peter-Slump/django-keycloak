@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 class KeycloakAuthorizationCodeBackend(object):
 
     def get_user(self, user_id):
-        # TODO: This is not going to work if we do not store the user, change this to create non-model-based object
         UserModel = get_user_model()
 
         try:
@@ -40,7 +39,6 @@ class KeycloakAuthorizationCodeBackend(object):
                 redirect_uri=redirect_uri
             )
 
-        # TODO: This might need to change too, since it is not sure if the update_or_create can fill in .user
         return keycloak_openid_profile.user
 
     def get_all_permissions(self, user_obj, obj=None):
@@ -60,8 +58,6 @@ class KeycloakAuthorizationCodeBackend(object):
 
         logger.debug(rpt_decoded)
 
-        # Todo: this will probably just work, but then we need to include the oidc_profile in the user
-
         return [
             role for role in rpt_decoded['resource_access'].get(
                 user_obj.oidc_profile.realm.client_id,
@@ -73,3 +69,23 @@ class KeycloakAuthorizationCodeBackend(object):
         if not user_obj.is_active:
             return False
         return perm in self.get_all_permissions(user_obj, obj)
+
+
+class KeycloakRemoteUserAuthorizationCodeBackend(KeycloakAuthorizationCodeBackend):
+
+    def get_user(self, user_id):
+        return None
+
+    def authenticate(self, request, code, redirect_uri):
+        if not hasattr(request, 'realm'):
+            raise ImproperlyConfigured(
+                'Add BaseKeycloakMiddleware to middlewares')
+
+        user = django_keycloak.services.keycloak_open_id_profile\
+            .get_user_from_user_info(
+                realm=request.realm,
+                code=code,
+                redirect_uri=redirect_uri
+            )
+
+        return user
