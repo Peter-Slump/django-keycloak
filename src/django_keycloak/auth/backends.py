@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 class KeycloakAuthorizationCodeBackend(object):
 
     def get_user(self, user_id):
+        # TODO: This is not going to work if we do not store the user, change this to create non-model-based object
         UserModel = get_user_model()
 
         try:
@@ -39,6 +40,7 @@ class KeycloakAuthorizationCodeBackend(object):
                 redirect_uri=redirect_uri
             )
 
+        # TODO: This might need to change too, since it is not sure if the update_or_create can fill in .user
         return keycloak_openid_profile.user
 
     def get_all_permissions(self, user_obj, obj=None):
@@ -57,6 +59,8 @@ class KeycloakAuthorizationCodeBackend(object):
             .get_entitlement(oidc_profile=user_obj.oidc_profile)
 
         logger.debug(rpt_decoded)
+
+        # Todo: this will probably just work, but then we need to include the oidc_profile in the user
 
         return [
             role for role in rpt_decoded['resource_access'].get(

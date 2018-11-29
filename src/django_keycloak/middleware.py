@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_realm(request):
+    # TODO: Now we get the first realm in the database, we should probably change this, but that might also be something for the app where it is implemented
     if not hasattr(request, '_cached_realm'):
         request._cached_realm = Realm.objects.first()
     return request._cached_realm

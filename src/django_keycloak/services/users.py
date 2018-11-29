@@ -23,6 +23,7 @@ def add_user(realm, user):
     """
     credentials = credential_representation_from_hash(hash_=user.password)
 
+    # TODO: Check how this can be supported since this is probably only used for migration
     realm.keycloak_admin.realms.by_name(realm.name).users.create(
         username=user.username,
         credentials=credentials,

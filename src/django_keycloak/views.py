@@ -82,6 +82,7 @@ class LoginComplete(RedirectView):
 class Logout(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
+        # TODO: oidc_profile is not stored in the user, probably needs to be changed
         if hasattr(self.request.user, 'oidc_profile'):
             self.request.realm.keycloak_openid.logout(
                 self.request.user.oidc_profile.refresh_token

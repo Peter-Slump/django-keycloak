@@ -56,6 +56,8 @@ def update_or_create(realm, code, redirect_uri):
         logger.debug('KeycloakOpenIDProfile found, sub %s' %
                      id_token_object['sub'])
 
+
+        # TODO: Change this to not depend on keycloak_profile.user since we want a stateless user object
         user = keycloak_profile.user
         user.email = userinfo.get('email', '')
         user.first_name = userinfo.get('given_name', '')
@@ -67,7 +69,9 @@ def update_or_create(realm, code, redirect_uri):
         logger.debug("KeycloakOpenIDProfile for sub %s not found, so it'll be "
                      "created" % id_token_object['sub'])
 
+    # TODO: Change this since no 'model' is being used for the user
     UserModel = get_user_model()
+
     try:
         user = UserModel.objects.get(username=id_token_object['sub'])
     except UserModel.DoesNotExist:
@@ -75,6 +79,7 @@ def update_or_create(realm, code, redirect_uri):
         user.username = id_token_object['sub']
         user.set_unusable_password()
 
+    # TODO: We already fill user details based on the userinfo, so we can skip this from the
     user.email = userinfo.get('email', '')
     user.first_name = userinfo.get('given_name', '')
     user.last_name = userinfo.get('family_name', '')

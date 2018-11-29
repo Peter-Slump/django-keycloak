@@ -24,6 +24,8 @@ class TokenStorage(models.Model):
 class KeycloakOpenIDProfile(TokenStorage):
 
     sub = models.CharField(max_length=255, unique=True)
+
+    # TODO: Remove user from the profile since we do not want to store our user information in the application
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
                                 related_name='oidc_profile',
                                 on_delete=models.CASCADE)
