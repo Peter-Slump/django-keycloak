@@ -25,10 +25,9 @@ class KeycloakOpenIDProfile(TokenStorage):
 
     sub = models.CharField(max_length=255, unique=True)
 
-    if settings.AUTH_USER_MODEL:
-        user = models.OneToOneField(settings.AUTH_USER_MODEL,
-                                    related_name='oidc_profile',
-                                    on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL,
+                                related_name='oidc_profile',
+                                on_delete=models.CASCADE)
 
     realm = models.ForeignKey('django_keycloak.Realm',
                               related_name='openid_profiles',
