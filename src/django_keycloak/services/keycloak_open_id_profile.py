@@ -169,7 +169,7 @@ def get_user_from_user_info(realm, code, redirect_uri):
     refresh_expires_before = now + timedelta(
         seconds=response_dict['refresh_expires_in'])
 
-    keycloak_profile = realm.openid_profiles.get_or_create(
+    keycloak_profile, created = realm.openid_profiles.get_or_create(
         sub=id_token_object['sub']
     )
 
