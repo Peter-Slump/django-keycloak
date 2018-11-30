@@ -87,7 +87,8 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.AddField(
-            model_name='keycloakopenidprofile',
+            model_name='keycloakremoteuseropenidprofile' if hasattr(settings, 'AUTH_REMOTE_USER_MODEL')
+            else 'keycloakopenidprofile',
             name='realm',
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.CASCADE,
