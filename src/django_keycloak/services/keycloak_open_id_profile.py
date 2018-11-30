@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 
 from django_keycloak.models import KeycloakOpenIDProfile
-from django_keycloak.stateless_user import KeycloakRemoteUser
+from django_keycloak.remote_user import KeycloakRemoteUser
 
 
 logger = logging.getLogger(__name__)
