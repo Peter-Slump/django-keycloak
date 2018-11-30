@@ -47,6 +47,14 @@ backend and middleware. Point to the correct login page.
 
     LOGIN_URL = 'keycloak_login'
 
+    AUTH_USER_MODEL = '<YOUR USER MODEL>'
+
+.. note::
+    To use Django Keycloak without storing a User Model in the application'
+    you should set the ``AUTH_USER_MODEL`` to ``None`` and use the
+    ``django_keycloak.auth.backends.KeycloakRemoteUserAuthorizationCodeBackend``
+    instead of the backend described in the example.
+
 Realm configuration
 ===================
 
