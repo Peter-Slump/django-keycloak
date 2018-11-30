@@ -101,7 +101,7 @@ class Migration(migrations.Migration):
         ),
     ]
 
-    if hasattr(settings, 'AUTH_REMOTE_USER_MODEL'):
+    if not hasattr(settings, 'AUTH_REMOTE_USER_MODEL'):
         # Only add oidc_profile to user if AUTH_USER_MODEL is set,
         # Otherwise we will assume that no user model is stored in the application
         operations.append(
