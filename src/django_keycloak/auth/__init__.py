@@ -7,21 +7,28 @@ from django.utils.crypto import constant_time_compare
 from django_keycloak.models import KeycloakRemoteUserOpenIDProfile
 
 
+def _get_user_session_key(request):
+    return str(request.session[SESSION_KEY])
+
+
 def get_remote_user(request):
     """
 
     :param request:
     :return:
     """
-    realm, sub = str(request.session[SESSION_KEY]).split(',', 1)
+    sub = str(request.session[SESSION_KEY])
+
+    user = None
 
     try:
-        oidc_profile = KeycloakRemoteUserOpenIDProfile.objects.filter(realm=realm, sub=sub)
-    except KeycloakRemoteUserOpenIDProfile.DoesNotExist:
-        user = None
+        oidc_profile = KeycloakRemoteUserOpenIDProfile.objects.filter(realm=request.realm, sub=sub)
 
-    if oidc_profile.refresh_expires_before > timezone.now():
-        user = oidc_profile.user
+        if oidc_profile.refresh_expires_before > timezone.now():
+            user = oidc_profile.user
+
+    except KeycloakRemoteUserOpenIDProfile.DoesNotExist:
+        pass
 
     return user or AnonymousUser()
 
