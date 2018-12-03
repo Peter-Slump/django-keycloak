@@ -27,6 +27,15 @@ class KeycloakRemoteUser(object):
         return 0
 
     @property
+    def identifier(self):
+        """
+        Identifier used for session storage.
+        :rtype: str
+        """
+        if self.oidc_profile:
+            return "{}-{}".format(self.oidc_profile.realm.name, self.oidc_profile.sub)
+
+    @property
     def is_staff(self):
         """
         :rtype: bool
