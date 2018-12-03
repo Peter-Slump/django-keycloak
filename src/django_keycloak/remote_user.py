@@ -14,6 +14,8 @@ class KeycloakRemoteUser(object):
 
     oidc_profile = None
 
+    _last_login = None
+
     def __init__(self):
         pass
 
@@ -63,10 +65,18 @@ class KeycloakRemoteUser(object):
     def last_login(self):
         """
 
-        :rtype: DateTime
         :return:
         """
-        return ''
+        return self._last_login
+
+    @last_login.setter
+    def last_login(self, content):
+        """
+
+        :param content:
+        :return:
+        """
+        self._last_login = content
 
     @property
     def date_joined(self):
