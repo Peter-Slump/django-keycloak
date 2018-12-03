@@ -42,6 +42,14 @@ class KeycloakRemoteUserOpenIDProfile(TokenStorage):
                               related_name='openid_profiles',
                               on_delete=models.CASCADE)
 
+    @cached_property
+    def user(self):
+        import django_keycloak.services.keycloak_open_id_profile
+        return django_keycloak.services.keycloak_open_id_profile. \
+            get_remote_user_from_profile(
+                oidc_profile=self
+            )
+
 
 class Nonce(models.Model):
 

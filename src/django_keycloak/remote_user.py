@@ -35,7 +35,7 @@ class KeycloakRemoteUser(object):
         :rtype: str
         """
         if self.oidc_profile:
-            return "{}-{}".format(self.oidc_profile.realm.name, self.oidc_profile.sub)
+            return "{},{}".format(self.oidc_profile.realm.name, self.oidc_profile.sub)
 
     @property
     def is_staff(self):
