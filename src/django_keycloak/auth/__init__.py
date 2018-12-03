@@ -17,7 +17,7 @@ def get_remote_user(request):
     :param request:
     :return:
     """
-    sub = str(request.session[SESSION_KEY])
+    sub = request.session.get(SESSION_KEY)
 
     user = None
 
@@ -46,16 +46,9 @@ def remote_user_login(request, user, backend=None):
     session_auth_hash = ''
     if user is None:
         user = request.user
-    if hasattr(user, 'get_session_auth_hash'):
-        session_auth_hash = user.get_session_auth_hash()
 
     if SESSION_KEY in request.session:
-        if _get_user_session_key(request) != user.identifier or (
-                session_auth_hash and
-                not constant_time_compare(request.session.get(HASH_SESSION_KEY, ''), session_auth_hash)):
-            # To avoid reusing another user's session, create a new, empty
-            # session if the existing session corresponds to a different
-            # authenticated user.
+        if _get_user_session_key(request) != user.identifier:
             request.session.flush()
     else:
         request.session.cycle_key()
