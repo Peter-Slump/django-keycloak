@@ -5,6 +5,7 @@ import logging
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from keycloak.exceptions import KeycloakClientError
 
 from django_keycloak.remote_user import KeycloakRemoteUser
 
@@ -149,9 +150,12 @@ def get_remote_user_from_profile(oidc_profile):
     :return:
     """
 
-    userinfo = oidc_profile.realm.keycloak_openid.userinfo(
-        token=oidc_profile.access_token
-    )
+    try:
+        userinfo = oidc_profile.realm.keycloak_openid.userinfo(
+            token=oidc_profile.access_token
+        )
+    except KeycloakClientError:
+        return None
 
     user = KeycloakRemoteUser()
     user.username = userinfo['sub']
