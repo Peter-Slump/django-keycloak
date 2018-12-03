@@ -19,6 +19,9 @@ class KeycloakRemoteUser(object):
     def __init__(self):
         pass
 
+    def __str__(self):
+        return '%s@%s' % (self.username, self.oidc_profile.realm.name)
+
     @property
     def pk(self):
         """
