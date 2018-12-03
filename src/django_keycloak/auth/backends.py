@@ -4,8 +4,6 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ImproperlyConfigured
 from django.utils import timezone
 
-from django_keycloak.models import KeycloakRemoteUserOpenIDProfile
-
 import django_keycloak.services.keycloak_open_id_profile
 
 
@@ -71,19 +69,3 @@ class KeycloakAuthorizationCodeBackend(object):
         if not user_obj.is_active:
             return False
         return perm in self.get_all_permissions(user_obj, obj)
-
-
-class KeycloakRemoteUserAuthorizationCodeBackend(KeycloakAuthorizationCodeBackend):
-
-    def get_user(self, identifier):
-        realm, sub = identifier.split(',', 1)
-
-        try:
-            oidc_profile = KeycloakRemoteUserOpenIDProfile.objects.filter(realm=realm, sub=sub)
-        except KeycloakRemoteUserOpenIDProfile.DoesNotExist:
-            return None
-
-        if oidc_profile.refresh_expires_before > timezone.now():
-            return oidc_profile.user
-
-        return None

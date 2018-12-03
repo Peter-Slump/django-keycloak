@@ -1,7 +1,10 @@
 from django.contrib.auth import SESSION_KEY, HASH_SESSION_KEY, BACKEND_SESSION_KEY, get_user_model, _get_backends
 from django.contrib.auth.signals import user_logged_in
 from django.middleware.csrf import rotate_token
+from django.utils import timezone
 from django.utils.crypto import constant_time_compare
+
+from django_keycloak.models import KeycloakRemoteUserOpenIDProfile
 
 
 def _get_user_session_key(request):
@@ -12,6 +15,25 @@ def _get_user_session_key(request):
     :return:
     """
     return str(request.session[SESSION_KEY])
+
+
+def get_remote_user(identifier):
+    """
+
+    :param identifier:
+    :return:
+    """
+    realm, sub = identifier.split(',', 1)
+
+    try:
+        oidc_profile = KeycloakRemoteUserOpenIDProfile.objects.filter(realm=realm, sub=sub)
+    except KeycloakRemoteUserOpenIDProfile.DoesNotExist:
+        return None
+
+    if oidc_profile.refresh_expires_before > timezone.now():
+        return oidc_profile.user
+
+    return None
 
 
 def remote_user_login(request, user, backend=None):
