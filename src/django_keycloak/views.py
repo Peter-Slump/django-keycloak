@@ -75,7 +75,7 @@ class LoginComplete(RedirectView):
                             code=self.request.GET['code'],
                             redirect_uri=nonce.redirect_uri)
 
-        if settings.AUTH_REMOTE_USER_MODEL:
+        if hasattr(settings, 'AUTH_REMOTE_USER_MODEL'):
             remote_user_login(self.request, user)
         else:
             login(self.request, user)
