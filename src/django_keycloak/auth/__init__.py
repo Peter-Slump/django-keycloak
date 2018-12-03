@@ -1,5 +1,5 @@
 from django.contrib.auth import SESSION_KEY, HASH_SESSION_KEY, BACKEND_SESSION_KEY, get_user_model, _get_backends
-from django.contrib.auth.signals import user_logged_in
+from django.contrib.auth.models import AnonymousUser
 from django.middleware.csrf import rotate_token
 from django.utils import timezone
 from django.utils.crypto import constant_time_compare
@@ -7,33 +7,23 @@ from django.utils.crypto import constant_time_compare
 from django_keycloak.models import KeycloakRemoteUserOpenIDProfile
 
 
-def _get_user_session_key(request):
+def get_remote_user(request):
     """
-    Overrides the default django.contrib.auth._get_user_session_key since it relies
-    on a PK which is not supported for a non-database-backed user.
+
     :param request:
     :return:
     """
-    return str(request.session[SESSION_KEY])
-
-
-def get_remote_user(identifier):
-    """
-
-    :param identifier:
-    :return:
-    """
-    realm, sub = identifier.split(',', 1)
+    realm, sub = str(request.session[SESSION_KEY]).split(',', 1)
 
     try:
         oidc_profile = KeycloakRemoteUserOpenIDProfile.objects.filter(realm=realm, sub=sub)
     except KeycloakRemoteUserOpenIDProfile.DoesNotExist:
-        return None
+        user = None
 
     if oidc_profile.refresh_expires_before > timezone.now():
-        return oidc_profile.user
+        user = oidc_profile.user
 
-    return None
+    return user or AnonymousUser()
 
 
 def remote_user_login(request, user, backend=None):

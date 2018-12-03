@@ -4,7 +4,7 @@ from django.utils.deprecation import MiddlewareMixin
 from django.utils.functional import SimpleLazyObject
 
 from django_keycloak.models import Realm
-from django_keycloak.auth import _get_user_session_key, get_remote_user
+from django_keycloak.auth import get_remote_user
 
 logger = logging.getLogger(__name__)
 
@@ -17,8 +17,8 @@ def get_realm(request):
 
 def get_user(request):
     if not hasattr(request, '_cached_user'):
-        identifier = _get_user_session_key(request)
-        request._cached_user = get_remote_user(identifier)
+        request._cached_user = get_remote_user(request)
+    return request._cached_user
 
 
 class BaseKeycloakMiddleware(MiddlewareMixin):
