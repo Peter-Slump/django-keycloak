@@ -21,6 +21,7 @@ from django.urls.base import reverse
 from django.views.generic.base import RedirectView
 
 from django_keycloak.models import Nonce
+from django_keycloak.auth import remote_user_login
 
 
 logger = logging.getLogger(__name__)
@@ -73,7 +74,11 @@ class LoginComplete(RedirectView):
         user = authenticate(request=self.request,
                             code=self.request.GET['code'],
                             redirect_uri=nonce.redirect_uri)
-        login(self.request, user)
+
+        if settings.AUTH_REMOTE_USER_MODEL:
+            remote_user_login(self.request, user)
+        else:
+            login(self.request, user)
 
         nonce.delete()
         return HttpResponseRedirect(nonce.next_path or '/')
