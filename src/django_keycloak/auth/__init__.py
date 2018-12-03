@@ -65,4 +65,5 @@ def remote_user_login(request, user, backend=None):
     if hasattr(request, 'user'):
         request.user = user
     rotate_token(request)
-    user_logged_in.send(sender=user.__class__, request=request, user=user)
+    # FIXME: This signal triggers some receivers that cannot handle the remote_user
+    # user_logged_in.send(sender=user.__class__, request=request, user=user)
