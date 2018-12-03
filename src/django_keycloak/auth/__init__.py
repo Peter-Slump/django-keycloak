@@ -22,7 +22,7 @@ def get_remote_user(request):
     user = None
 
     try:
-        oidc_profile = KeycloakRemoteUserOpenIDProfile.objects.filter(realm=request.realm, sub=sub)
+        oidc_profile = KeycloakRemoteUserOpenIDProfile.objects.get(realm=request.realm, sub=sub)
 
         if oidc_profile.refresh_expires_before > timezone.now():
             user = oidc_profile.user
