@@ -1,3 +1,7 @@
+from django.contrib import auth
+from django.core.exceptions import PermissionDenied
+
+
 class KeycloakRemoteUser(object):
     """
     A class based on django.contrib.auth.models.User.
@@ -63,17 +67,15 @@ class KeycloakRemoteUser(object):
     @property
     def last_login(self):
         """
-
-        :return:
+        :rtype: datetime
+        :return: the date and time of the last login
         """
         return self._last_login
 
     @last_login.setter
     def last_login(self, content):
         """
-
-        :param content:
-        :return:
+        :param datetime content:
         """
         self._last_login = content
 
@@ -129,16 +131,53 @@ class KeycloakRemoteUser(object):
         pass
 
     def get_all_permissions(self, obj=None):
-        pass
+        """
+        Logic from django.contrib.auth.models._user_get_all_permissions
+        :param perm:
+        :param obj:
+        :return:
+        """
+        permissions = set()
+        for backend in auth.get_backends():
+            if hasattr(backend, "get_all_permissions"):
+                permissions.update(backend.get_all_permissions(self, obj))
+        return permissions
 
-    def has_perm(self, obj=None):
-        pass
+    def has_perm(self, perm, obj=None):
+        """
+        Logic from django.contrib.auth.models._user_has_perm
+        :param perm:
+        :param obj:
+        :return:
+        """
+        for backend in auth.get_backends():
+            if not hasattr(backend, 'has_perm'):
+                continue
+            try:
+                if backend.has_perm(self, perm, obj):
+                    return True
+            except PermissionDenied:
+                return False
+        return False
 
-    def has_perms(self, obj=None):
-        pass
+    def has_perms(self, perm_list, obj=None):
+        return all(self.has_perm(perm, obj) for perm in perm_list)
 
-    def has_module_perms(self, obj=None):
-        pass
+    def has_module_perms(self, module):
+        """
+        Logic from django.contrib.auth.models._user_has_module_perms
+        :param module:
+        :return:
+        """
+        for backend in auth.get_backends():
+            if not hasattr(backend, 'has_module_perms'):
+                continue
+            try:
+                if backend.has_module_perms(self, module):
+                    return True
+            except PermissionDenied:
+                return False
+        return False
 
     def email_user(self, subject, message, from_email=None, **kwargs):
         raise NotImplementedError('This feature is not implemented by default, extend this class to implement')

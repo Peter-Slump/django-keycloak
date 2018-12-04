@@ -158,7 +158,7 @@ def get_remote_user_from_profile(oidc_profile):
         return None
 
     user = KeycloakRemoteUser()
-    user.username = userinfo['sub']
+    user.username = userinfo.get('preferred_username') or userinfo['sub']
     user.email = userinfo.get('email', '')
     user.first_name = userinfo.get('given_name', '')
     user.last_name = userinfo.get('family_name', '')
