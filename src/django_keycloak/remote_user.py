@@ -67,7 +67,7 @@ class KeycloakRemoteUser(object):
     @property
     def last_login(self):
         """
-        :rtype: datetime
+        :rtype: Datetime
         :return: the date and time of the last login
         """
         return self._last_login

@@ -2,7 +2,6 @@ from django.contrib.auth import SESSION_KEY, HASH_SESSION_KEY, BACKEND_SESSION_K
 from django.contrib.auth.models import AnonymousUser
 from django.middleware.csrf import rotate_token
 from django.utils import timezone
-from django.utils.crypto import constant_time_compare
 
 from django_keycloak.models import KeycloakRemoteUserOpenIDProfile
 
@@ -71,7 +70,7 @@ def remote_user_login(request, user, backend=None):
             'The user does not have an identifier or the identifier is empty.'
         )
 
-    request.session[SESSION_KEY] = id(user)
+    request.session[SESSION_KEY] = user.identifier
     request.session[BACKEND_SESSION_KEY] = backend
     request.session[HASH_SESSION_KEY] = session_auth_hash
     if hasattr(request, 'user'):
