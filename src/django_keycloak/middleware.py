@@ -2,6 +2,7 @@ import logging
 
 from django.utils.deprecation import MiddlewareMixin
 from django.utils.functional import SimpleLazyObject
+from django.contrib.auth import SESSION_KEY
 
 from django_keycloak.models import Realm
 from django_keycloak.auth import get_remote_user
@@ -38,4 +39,8 @@ class RemoteUserAuthenticationMiddleware(MiddlewareMixin):
         Adds user to the request when an authorized user is found in the session
         :param request: django request
         """
-        request.user = SimpleLazyObject(lambda: get_user(request))
+        if SESSION_KEY in request.session:
+            import ctypes
+            request.user = ctypes.cast(request.session[SESSION_KEY], ctypes.py_object).value
+        else:
+            request.user = SimpleLazyObject(lambda: get_user(request))
