@@ -59,9 +59,9 @@ class KeycloakAuthorizationCodeBackend(object):
         logger.debug(rpt_decoded)
 
         return [
-            role for role in rpt_decoded['authorization'].get(
+            permission for permission in rpt_decoded['authorization'].get(
                 'permissions', []
-            )['roles']
+            )
         ]
 
     def has_perm(self, user_obj, perm, obj=None):
