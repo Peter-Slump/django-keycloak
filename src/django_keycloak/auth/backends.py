@@ -59,13 +59,21 @@ class KeycloakAuthorizationCodeBackend(object):
         logger.debug(rpt_decoded)
 
         return [
-            role for role in rpt_decoded['resource_access'].get(
-                user_obj.oidc_profile.realm.client_id,
-                {'roles': []}
+            role for role in rpt_decoded['authorization'].get(
+                'permissions', []
             )['roles']
         ]
 
     def has_perm(self, user_obj, perm, obj=None):
+        resource, scope = perm.split('.', 1)
+
         if not user_obj.is_active:
             return False
-        return perm in self.get_all_permissions(user_obj, obj)
+
+        granted_perms = self.get_all_permissions(user_obj, obj)
+
+        for p in granted_perms:
+            if p['resource_set_name'] == resource and scope in p['scopes']:
+                return True
+
+        return False
