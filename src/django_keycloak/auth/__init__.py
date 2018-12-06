@@ -6,8 +6,13 @@ from django.utils import timezone
 from django_keycloak.models import KeycloakRemoteUserOpenIDProfile
 
 
+# Using a different session key than the standard django.contrib.auth to make sure there is no cross-referencing
+# between UserModel and RemoteUserModel
+REMOTE_SESSION_KEY = '_auth_remote_user_id'
+
+
 def _get_user_session_key(request):
-    return str(request.session[SESSION_KEY])
+    return str(request.session[REMOTE_SESSION_KEY])
 
 
 def get_remote_user(request):
@@ -16,7 +21,7 @@ def get_remote_user(request):
     :param request:
     :return:
     """
-    sub = request.session.get(SESSION_KEY)
+    sub = request.session.get(REMOTE_SESSION_KEY)
 
     user = None
 
@@ -70,7 +75,7 @@ def remote_user_login(request, user, backend=None):
             'The user does not have an identifier or the identifier is empty.'
         )
 
-    request.session[SESSION_KEY] = user.identifier
+    request.session[REMOTE_SESSION_KEY] = user.identifier
     request.session[BACKEND_SESSION_KEY] = backend
     request.session[HASH_SESSION_KEY] = session_auth_hash
     if hasattr(request, 'user'):
