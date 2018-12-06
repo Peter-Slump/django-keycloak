@@ -2,10 +2,10 @@ from datetime import timedelta
 
 import logging
 
-from django.apps import apps as django_apps
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from django.utils.module_loading import import_string
 from django.core.exceptions import ImproperlyConfigured
 from keycloak.exceptions import KeycloakClientError
 
@@ -24,12 +24,10 @@ def get_remote_user_model():
         return KeycloakRemoteUser
 
     try:
-        return django_apps.get_model(settings.AUTH_REMOTE_USER_MODEL, require_ready=False)
-    except ValueError:
-        raise ImproperlyConfigured("AUTH_REMOTE_USER_MODEL must be of the form 'app_label.model_name'")
-    except LookupError:
+        return import_string(settings.AUTH_REMOTE_USER_MODEL)
+    except ImportError:
         raise ImproperlyConfigured(
-            "AUTH_REMOTE_USER_MODEL refers to model '%s' that has not been installed" % settings.AUTH_REMOTE_USER_MODEL
+            "AUTH_REMOTE_USER_MODEL refers to non-existing class"
         )
 
 
