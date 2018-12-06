@@ -2,15 +2,35 @@ from datetime import timedelta
 
 import logging
 
+from django.apps import apps as django_apps
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from django.core.exceptions import ImproperlyConfigured
 from keycloak.exceptions import KeycloakClientError
 
 from django_keycloak.remote_user import KeycloakRemoteUser
 
 
 logger = logging.getLogger(__name__)
+
+
+def get_remote_user_model():
+    """
+    Return the User model that is active in this project.
+    """
+    if not hasattr(settings, 'AUTH_REMOTE_USER_MODEL'):
+        # By default return the standard KeycloakRemoteUser model
+        return KeycloakRemoteUser
+
+    try:
+        return django_apps.get_model(settings.AUTH_REMOTE_USER_MODEL, require_ready=False)
+    except ValueError:
+        raise ImproperlyConfigured("AUTH_REMOTE_USER_MODEL must be of the form 'app_label.model_name'")
+    except LookupError:
+        raise ImproperlyConfigured(
+            "AUTH_REMOTE_USER_MODEL refers to model '%s' that has not been installed" % settings.AUTH_REMOTE_USER_MODEL
+        )
 
 
 def update_or_create(realm, code, redirect_uri):
@@ -157,11 +177,10 @@ def get_remote_user_from_profile(oidc_profile):
     except KeycloakClientError:
         return None
 
-    user = KeycloakRemoteUser()
-    user.username = userinfo.get('preferred_username') or userinfo['sub']
-    user.email = userinfo.get('email', '')
-    user.first_name = userinfo.get('given_name', '')
-    user.last_name = userinfo.get('family_name', '')
-    user.oidc_profile = oidc_profile
+    # Get the user from the AUTH_REMOTE_USER_MODEL in the settings
+    UserModel = get_remote_user_model()
+
+    # Create the object of type UserModel from the constructor of it's class as the included details can vary per model
+    user = UserModel(userinfo, oidc_profile)
 
     return user

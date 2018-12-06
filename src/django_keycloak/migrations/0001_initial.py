@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='KeycloakRemoteUserOpenIDProfile' if hasattr(settings, 'AUTH_REMOTE_USER_MODEL')
+            name='KeycloakRemoteUserOpenIDProfile' if getattr(settings, 'AUTH_ENABLE_REMOTE_USER', False)
             else 'KeycloakOpenIDProfile',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True,
@@ -87,7 +87,7 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.AddField(
-            model_name='keycloakremoteuseropenidprofile' if hasattr(settings, 'AUTH_REMOTE_USER_MODEL')
+            model_name='keycloakremoteuseropenidprofile' if getattr(settings, 'AUTH_ENABLE_REMOTE_USER', False)
             else 'keycloakopenidprofile',
             name='realm',
             field=models.ForeignKey(
@@ -102,7 +102,7 @@ class Migration(migrations.Migration):
         ),
     ]
 
-    if not hasattr(settings, 'AUTH_REMOTE_USER_MODEL'):
+    if not getattr(settings, 'AUTH_ENABLE_REMOTE_USER', False):
         # Only add oidc_profile to user if AUTH_USER_MODEL is set,
         # Otherwise we will assume that no user model is stored in the application
         operations.append(

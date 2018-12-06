@@ -20,6 +20,18 @@ class KeycloakRemoteUser(object):
 
     _last_login = None
 
+    def __init__(self, userinfo, oidc_profile):
+        """
+        Create KeycloakRemoteUser from userinfo and oidc_profile.
+        :param dict userinfo: the userinfo as retrieved from the OIDC provider
+        :param django_keycloak.models.KeycloakRemoteUserOpenIDProfile oidc_profile: the related oidc_profile
+        """
+        self.username = userinfo.get('preferred_username') or userinfo['sub']
+        self.email = userinfo.get('email', '')
+        self.first_name = userinfo.get('given_name', '')
+        self.last_name = userinfo.get('family_name', '')
+        self.oidc_profile = oidc_profile
+
     def __str__(self):
         return '%s@%s' % (self.username, self.oidc_profile.realm.name)
 
