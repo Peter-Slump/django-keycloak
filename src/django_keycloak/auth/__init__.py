@@ -51,7 +51,7 @@ def remote_user_login(request, user, backend=None):
     if user is None:
         user = request.user
 
-    if SESSION_KEY in request.session:
+    if REMOTE_SESSION_KEY in request.session:
         if _get_user_session_key(request) != user.identifier:
             request.session.flush()
     else:
