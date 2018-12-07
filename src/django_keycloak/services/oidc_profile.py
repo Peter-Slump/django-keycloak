@@ -10,7 +10,7 @@ from django.utils import timezone
 from django.utils.module_loading import import_string
 from keycloak.exceptions import KeycloakClientError
 
-from django_keycloak.models import OpenIdConnectProfile
+from django_keycloak.models import RemoteUserOpenIdConnectProfile, OpenIdConnectProfile
 from django_keycloak.services.exceptions import TokensExpired
 from django_keycloak.remote_user import KeycloakRemoteUser
 
@@ -66,7 +66,7 @@ def update_or_create_user_and_oidc_profile(client, id_token_object):
     """
 
     if getattr(settings, 'AUTH_ENABLE_REMOTE_USER', False):
-        oidc_profile, _ = OpenIdConnectProfile.objects.update_or_create(
+        oidc_profile, _ = RemoteUserOpenIdConnectProfile.objects.update_or_create(
             sub=id_token_object['sub'],
             defaults={
                 'realm': client.realm
