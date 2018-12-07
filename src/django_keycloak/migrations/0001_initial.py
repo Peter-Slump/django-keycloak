@@ -94,7 +94,7 @@ class Migration(migrations.Migration):
                     ('sub', models.CharField(max_length=255, unique=True)),
                 ],
                 options={
-                    'db_table': 'openidconnectprofile',
+                    'db_table': 'django_keycloak_openidconnectprofile',
                 },
             ),
 
@@ -130,7 +130,7 @@ class Migration(migrations.Migration):
                     ('sub', models.CharField(max_length=255, unique=True)),
                 ],
                 options={
-                    'db_table': 'openidconnectprofile',
+                    'db_table': 'django_keycloak_openidconnectprofile',
                 },
             ),
 
