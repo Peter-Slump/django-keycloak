@@ -2,16 +2,38 @@ from datetime import timedelta
 
 import logging
 
+from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.utils import timezone
+from django.utils.module_loading import import_string
+from keycloak.exceptions import KeycloakClientError
 
 from django_keycloak.models import OpenIdConnectProfile
 from django_keycloak.services.exceptions import TokensExpired
+from django_keycloak.remote_user import KeycloakRemoteUser
+
 
 import django_keycloak.services.realm
 
 logger = logging.getLogger(__name__)
+
+
+def get_remote_user_model():
+    """
+    Return the User model that is active in this project.
+    """
+    if not hasattr(settings, 'AUTH_REMOTE_USER_MODEL'):
+        # By default return the standard KeycloakRemoteUser model
+        return KeycloakRemoteUser
+
+    try:
+        return import_string(settings.AUTH_REMOTE_USER_MODEL)
+    except ImportError:
+        raise ImproperlyConfigured(
+            "AUTH_REMOTE_USER_MODEL refers to non-existing class"
+        )
 
 
 def get_or_create_from_id_token(client, id_token):
@@ -31,6 +53,27 @@ def get_or_create_from_id_token(client, id_token):
             'id_token_signing_alg_values_supported'],
         issuer=issuer
     )
+
+    return update_or_create_user_and_oidc_profile(client=client, id_token_object=id_token_object)
+
+
+def update_or_create_user_and_oidc_profile(client, id_token_object):
+    """
+
+    :param client:
+    :param id_token_object:
+    :return:
+    """
+
+    if hasattr(settings, 'AUTH_ENABLE_REMOTE_USER'):
+        oidc_profile, _ = OpenIdConnectProfile.objects.update_or_create(
+            sub=id_token_object['sub'],
+            defaults={
+                'realm': client.realm
+            }
+        )
+
+        return oidc_profile
 
     with transaction.atomic():
         UserModel = get_user_model()
@@ -53,6 +96,29 @@ def get_or_create_from_id_token(client, id_token):
         )
 
     return oidc_profile
+
+
+def get_remote_user_from_profile(oidc_profile):
+    """
+
+    :param oidc_profile:
+    :return:
+    """
+
+    try:
+        userinfo = oidc_profile.realm.keycloak_openid.userinfo(
+            token=oidc_profile.access_token
+        )
+    except KeycloakClientError:
+        return None
+
+    # Get the user from the AUTH_REMOTE_USER_MODEL in the settings
+    UserModel = get_remote_user_model()
+
+    # Create the object of type UserModel from the constructor of it's class as the included details can vary per model
+    user = UserModel(userinfo, oidc_profile)
+
+    return user
 
 
 def update_or_create_from_code(code, client, redirect_uri):
@@ -105,28 +171,7 @@ def _update_or_create(client, token_response, initiate_time):
         issuer=issuer
     )
 
-    userinfo = client.openid_api_client.userinfo(
-        token=token_response['access_token'])
-
-    with transaction.atomic():
-        UserModel = get_user_model()
-        email_field_name = UserModel.get_email_field_name()
-        user, _ = UserModel.objects.update_or_create(
-            username=id_token_object['sub'],
-            defaults={
-                email_field_name: userinfo.get('email', ''),
-                'first_name': userinfo.get('given_name', ''),
-                'last_name': userinfo.get('family_name', '')
-            }
-        )
-
-        oidc_profile, _ = OpenIdConnectProfile.objects.update_or_create(
-            sub=id_token_object['sub'],
-            defaults={
-                'realm': client.realm,
-                'user': user
-            }
-        )
+    oidc_profile = update_or_create_user_and_oidc_profile(client=client, id_token_object=id_token_object)
 
     return update_tokens(token_model=oidc_profile,
                          token_response=token_response,
