@@ -163,7 +163,7 @@ class OpenIdConnectProfile(TokenModelAbstract):
                                 on_delete=models.CASCADE)
 
     class Meta(object):
-        db_table = 'openidconnectprofile'
+        db_table = 'django_keycloak_openidconnectprofile'
 
     @property
     def jwt(self):
@@ -190,7 +190,7 @@ class RemoteUserOpenIdConnectProfile(TokenModelAbstract):
                               on_delete=models.CASCADE)
 
     class Meta(object):
-        db_table = 'openidconnectprofile'
+        db_table = 'django_keycloak_openidconnectprofile'
 
     @cached_property
     def user(self):
