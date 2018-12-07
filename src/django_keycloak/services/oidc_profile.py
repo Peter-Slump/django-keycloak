@@ -144,6 +144,29 @@ def update_or_create_from_code(code, client, redirect_uri):
                              initiate_time=initiate_time)
 
 
+def update_or_create_from_password_credentials(username, password, client):
+    """
+    Update or create an user based on username and password.
+    Response as specified in:
+
+    https://tools.ietf.org/html/rfc6749#section-4.3.3
+
+    :param str username: the username to authenticate with
+    :param str password: the password to authenticate with
+    :param django_keycloak.models.Client client:
+    :rtype: django_keycloak.models.OpenIdConnectProfile
+    """
+
+    # Define "initiate_time" before getting the access token to calculate
+    # before which time it expires.
+    initiate_time = timezone.now()
+    token_response = client.openid_api_client.password_credentials(
+        username=username, password=password)
+
+    return _update_or_create(client=client, token_response=token_response,
+                             initiate_time=initiate_time)
+
+
 def _update_or_create(client, token_response, initiate_time):
     """
     Update or create an user based on a token response.

@@ -176,7 +176,8 @@ class OpenIdConnectProfile(TokenModelAbstract):
                 'id_token_signing_alg_values_supported']
         )
 
-class RemoteUserOpenIdConnectProfile(TokenStorage):
+
+class RemoteUserOpenIdConnectProfile(TokenModelAbstract):
 
     sub = models.CharField(max_length=255, unique=True)
 
@@ -186,8 +187,8 @@ class RemoteUserOpenIdConnectProfile(TokenStorage):
 
     @cached_property
     def user(self):
-        import django_keycloak.services.keycloak_open_id_profile
-        return django_keycloak.services.keycloak_open_id_profile. \
+        import django_keycloak.services.oidc_profile
+        return django_keycloak.services.oidc_profile. \
             get_remote_user_from_profile(
                 oidc_profile=self
             )

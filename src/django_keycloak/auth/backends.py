@@ -100,7 +100,7 @@ class KeycloakPasswordCredentialsBackend(KeycloakAuthorizationBase):
                 client=request.realm.client,
                 username=username,
                 password=password
-        )
+            )
 
         return keycloak_openid_profile.user
 
