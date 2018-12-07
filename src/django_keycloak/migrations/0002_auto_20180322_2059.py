@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('oidc_profile', models.ForeignKey(
                     on_delete=django.db.models.deletion.CASCADE,
                     to='django_keycloak.OpenIdConnectProfile' if not getattr(settings, 'AUTH_ENABLE_REMOTE_USER', False)
-                    else 'django_keycloak.RemoteUserOpenIdConnectProfileOpenIdConnectProfile'
+                    else 'django_keycloak.RemoteUserOpenIdConnectProfile'
                 )),
             ],
         ),
