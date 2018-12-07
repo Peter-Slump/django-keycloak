@@ -162,6 +162,9 @@ class OpenIdConnectProfile(TokenModelAbstract):
                                 related_name='oidc_profile',
                                 on_delete=models.CASCADE)
 
+    class Meta(object):
+        db_table = 'openidconnectprofile'
+
     @property
     def jwt(self):
         """
@@ -185,6 +188,9 @@ class RemoteUserOpenIdConnectProfile(TokenModelAbstract):
     realm = models.ForeignKey('django_keycloak.Realm',
                               related_name='openid_profiles',
                               on_delete=models.CASCADE)
+
+    class Meta(object):
+        db_table = 'openidconnectprofile'
 
     @cached_property
     def user(self):

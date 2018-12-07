@@ -93,6 +93,9 @@ class Migration(migrations.Migration):
                     ('refresh_expires_before', models.DateTimeField(null=True)),
                     ('sub', models.CharField(max_length=255, unique=True)),
                 ],
+                options={
+                    'db_table': 'openidconnectprofile',
+                },
             ),
 
             migrations.AddField(
@@ -126,6 +129,9 @@ class Migration(migrations.Migration):
                     ('refresh_expires_before', models.DateTimeField(null=True)),
                     ('sub', models.CharField(max_length=255, unique=True)),
                 ],
+                options={
+                    'db_table': 'openidconnectprofile',
+                },
             ),
 
             migrations.AddField(
