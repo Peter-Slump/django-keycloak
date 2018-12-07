@@ -95,6 +95,10 @@ class KeycloakPasswordCredentialsBackend(KeycloakAuthorizationBase):
             raise ImproperlyConfigured(
                 'Add BaseKeycloakMiddleware to middlewares')
 
+        if not request.realm:
+            # If request.realm does exist, but it is filled with None, we can't authenticate using Keycloak
+            return None
+
         keycloak_openid_profile = django_keycloak.services\
             .oidc_profile.update_or_create_from_password_credentials(
                 client=request.realm.client,
