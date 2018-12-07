@@ -93,6 +93,9 @@ class Migration(migrations.Migration):
                     ('refresh_expires_before', models.DateTimeField(null=True)),
                     ('sub', models.CharField(max_length=255, unique=True)),
                 ],
+                options={
+                    'abstract': False,
+                },
             )
         )
 
@@ -139,16 +142,21 @@ class Migration(migrations.Migration):
                     ('refresh_expires_before', models.DateTimeField(null=True)),
                     ('sub', models.CharField(max_length=255, unique=True)),
                 ],
+                options={
+                    'abstract': False,
+                },
             )
         )
 
-        operations.append(migrations.AddField(
-            model_name='remoteuseropenidconnectprofile',
-            name='realm',
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name='openid_profiles', to='django_keycloak.Realm'),
-        ))
+        operations.append(
+            migrations.AddField(
+                model_name='remoteuseropenidconnectprofile',
+                name='realm',
+                field=models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='openid_profiles', to='django_keycloak.Realm'),
+            )
+        )
 
     operations.append(
         migrations.AddField(

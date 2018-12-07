@@ -161,20 +161,20 @@ class OpenIdConnectProfile(TokenModelAbstract):
                               related_name='openid_profiles',
                               on_delete=models.CASCADE)
 
-    @property
-    def jwt(self):
-        """
-        :rtype: dict
-        """
-        if not self.is_active:
-            return None
-        client = self.realm.client
-        return client.openid_api_client.decode_token(
-            token=self.access_token,
-            key=client.realm.certs,
-            algorithms=client.openid_api_client.well_known[
-                'id_token_signing_alg_values_supported']
-        )
+    # @property
+    # def jwt(self):
+    #     """
+    #     :rtype: dict
+    #     """
+    #     if not self.is_active:
+    #         return None
+    #     client = self.realm.client
+    #     return client.openid_api_client.decode_token(
+    #         token=self.access_token,
+    #         key=client.realm.certs,
+    #         algorithms=client.openid_api_client.well_known[
+    #             'id_token_signing_alg_values_supported']
+    #     )
 
 
 class RemoteUserOpenIdConnectProfile(TokenModelAbstract):
@@ -193,20 +193,20 @@ class RemoteUserOpenIdConnectProfile(TokenModelAbstract):
                 oidc_profile=self
             )
 
-    @property
-    def jwt(self):
-        """
-        :rtype: dict
-        """
-        if not self.is_active:
-            return None
-        client = self.realm.client
-        return client.openid_api_client.decode_token(
-            token=self.access_token,
-            key=client.realm.certs,
-            algorithms=client.openid_api_client.well_known[
-                'id_token_signing_alg_values_supported']
-        )
+    # @property
+    # def jwt(self):
+    #     """
+    #     :rtype: dict
+    #     """
+    #     if not self.is_active:
+    #         return None
+    #     client = self.realm.client
+    #     return client.openid_api_client.decode_token(
+    #         token=self.access_token,
+    #         key=client.realm.certs,
+    #         algorithms=client.openid_api_client.well_known[
+    #             'id_token_signing_alg_values_supported']
+    #     )
 
 
 class Nonce(models.Model):
