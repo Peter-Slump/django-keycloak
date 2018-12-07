@@ -14,17 +14,16 @@ def credential_representation_from_hash(hash_, temporary=False):
     }
 
 
-def add_user(realm, user):
+def add_user(client, user):
     """
     Create user in Keycloak based on a local user including password.
 
-    :param django_keycloak.models.Realm realm:
+    :param django_keycloak.models.Client client:
     :param django.contrib.auth.models.User user:
     """
     credentials = credential_representation_from_hash(hash_=user.password)
 
-    # TODO: Check how this can be supported since this is probably only used for migration
-    realm.keycloak_admin.realms.by_name(realm.name).users.create(
+    client.admin_api_client.realms.by_name(client.realm.name).users.create(
         username=user.username,
         credentials=credentials,
         first_name=user.first_name,

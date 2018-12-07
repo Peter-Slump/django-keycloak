@@ -47,13 +47,17 @@ backend and middleware. Point to the correct login page.
 
     LOGIN_URL = 'keycloak_login'
 
-    AUTH_USER_MODEL = '<YOUR USER MODEL>'
+Server configuration
+====================
 
-.. note::
-    To use Django Keycloak without storing a User Model in the application'
-    you should set the ``AUTH_USER_MODEL`` to ``None`` and use the
-    ``django_keycloak.auth.backends.KeycloakRemoteUserAuthorizationCodeBackend``
-    instead of the backend described in the example.
+First you have to add your Keycloak server. You can do this in the Django Admin.
+
+.. image:: add-server.png
+
+.. note:: When your application access the Keycloak server using a different url
+          than the public one you can configure this URL as "internal url". Django
+          Keycloak will use that url for all direct communication but uses the standard
+          server url to redirect users for authentication.
 
 Realm configuration
 ===================
@@ -69,11 +73,6 @@ in Keycloak you can add these in the Django admin.
           selects the first realm available in the database.
 
 .. image:: add-realm.png
-
-.. note:: When your application access the Keycloak server using a different url
-than the public one you can configure this URL as "internal server url". Django
-Keycloak will use that url for all direc communication but uses the standard
-server url to redirect users for authentication.
 
 After you have added the realm please make sure to run te following actions:
 
@@ -96,19 +95,6 @@ In the Django Admin you can apply the action "Refresh OpenID Connect
 content for the OpenID Connect functionality and caches this in the database. In
 this way it's not required to fetch this file before each request regarding
 OpenID Connect to the Keycloak server.
-
------------------------
-Refresh UMA .well-known
------------------------
-
-In the Django Admin you can apply the action "Refresh UMA .well-known" for a
-realm. This retrieves the .well-known content for the UMA functionality and
-caches this in the database. In this way it's not required to fetch this file
-before each request regarding UMA to the Keycloak server.
-
-.. note::
-    This is a legacy action. There is currently no UMA-related functionality
-    available in Django-Keycloak.
 
 .. _refresh_certificates:
 
