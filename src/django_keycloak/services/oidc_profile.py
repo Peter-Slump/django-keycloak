@@ -106,7 +106,7 @@ def get_remote_user_from_profile(oidc_profile):
     """
 
     try:
-        userinfo = oidc_profile.realm.keycloak_openid.userinfo(
+        userinfo = oidc_profile.realm.realm_api_client.open_id_connect.userinfo(
             token=oidc_profile.access_token
         )
     except KeycloakClientError:
