@@ -158,18 +158,41 @@ class OpenIdConnectProfile(TokenModelAbstract):
                               related_name='openid_profiles',
                               on_delete=models.CASCADE)
 
-    if not getattr(settings, 'AUTH_ENABLE_REMOTE_USER', False):
-        user = models.OneToOneField(settings.AUTH_USER_MODEL,
-                                    related_name='oidc_profile',
-                                    on_delete=models.CASCADE)
-    else:
-        @cached_property
-        def user(self):
-            import django_keycloak.services.oidc_profile
-            return django_keycloak.services.oidc_profile. \
-                get_remote_user_from_profile(
-                    oidc_profile=self
-                )
+    user = models.OneToOneField(settings.AUTH_USER_MODEL,
+                                related_name='oidc_profile',
+                                on_delete=models.CASCADE)
+
+    @property
+    def jwt(self):
+        """
+        :rtype: dict
+        """
+        if not self.is_active:
+            return None
+        client = self.realm.client
+        return client.openid_api_client.decode_token(
+            token=self.access_token,
+            key=client.realm.certs,
+            algorithms=client.openid_api_client.well_known[
+                'id_token_signing_alg_values_supported']
+        )
+
+
+class RemoteUserOpenIdConnectProfile(TokenModelAbstract):
+
+    sub = models.CharField(max_length=255, unique=True)
+
+    realm = models.ForeignKey('django_keycloak.Realm',
+                              related_name='openid_profiles',
+                              on_delete=models.CASCADE)
+
+    @cached_property
+    def user(self):
+        import django_keycloak.services.oidc_profile
+        return django_keycloak.services.oidc_profile. \
+            get_remote_user_from_profile(
+                oidc_profile=self
+            )
 
     @property
     def jwt(self):

@@ -3,7 +3,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.middleware.csrf import rotate_token
 from django.utils import timezone
 
-from django_keycloak.models import RemoteUserOpenIdProfile
+from django_keycloak.models import RemoteUserOpenIdConnectProfile
 
 
 # Using a different session key than the standard django.contrib.auth to make sure there is no cross-referencing
@@ -26,12 +26,12 @@ def get_remote_user(request):
     user = None
 
     try:
-        oidc_profile = RemoteUserOpenIdProfile.objects.get(realm=request.realm, sub=sub)
+        oidc_profile = RemoteUserOpenIdConnectProfile.objects.get(realm=request.realm, sub=sub)
 
         if oidc_profile.refresh_expires_before > timezone.now():
             user = oidc_profile.user
 
-    except RemoteUserOpenIdProfile.DoesNotExist:
+    except RemoteUserOpenIdConnectProfile.DoesNotExist:
         pass
 
     return user or AnonymousUser()
