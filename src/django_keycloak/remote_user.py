@@ -24,7 +24,7 @@ class KeycloakRemoteUser(object):
         """
         Create KeycloakRemoteUser from userinfo and oidc_profile.
         :param dict userinfo: the userinfo as retrieved from the OIDC provider
-        :param django_keycloak.models.KeycloakRemoteUserOpenIDProfile oidc_profile: the related oidc_profile
+        :param django_keycloak.models.RemoteUserOpenIdConnectProfile oidc_profile: the related oidc_profile
         """
         self.username = userinfo.get('preferred_username') or userinfo['sub']
         self.email = userinfo.get('email', '')
