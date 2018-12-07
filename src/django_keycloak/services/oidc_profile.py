@@ -65,7 +65,7 @@ def update_or_create_user_and_oidc_profile(client, id_token_object):
     :return:
     """
 
-    if hasattr(settings, 'AUTH_ENABLE_REMOTE_USER'):
+    if getattr(settings, 'AUTH_ENABLE_REMOTE_USER', False):
         oidc_profile, _ = OpenIdConnectProfile.objects.update_or_create(
             sub=id_token_object['sub'],
             defaults={
@@ -186,15 +186,17 @@ def _update_or_create(client, token_response, initiate_time):
     """
     issuer = django_keycloak.services.realm.get_issuer(client.realm)
 
-    id_token_object = client.openid_api_client.decode_token(
-        token=token_response['id_token'],
+    token_response_key = 'id_token' if hasattr(token_response, 'id_token') else 'access_token'
+
+    token_object = client.openid_api_client.decode_token(
+        token=token_response[token_response_key],
         key=client.realm.certs,
         algorithms=client.openid_api_client.well_known[
             'id_token_signing_alg_values_supported'],
         issuer=issuer
     )
 
-    oidc_profile = update_or_create_user_and_oidc_profile(client=client, id_token_object=id_token_object)
+    oidc_profile = update_or_create_user_and_oidc_profile(client=client, id_token_object=token_object)
 
     return update_tokens(token_model=oidc_profile,
                          token_response=token_response,
