@@ -109,14 +109,6 @@ class Migration(migrations.Migration):
                 field=models.ForeignKey(
                     on_delete=django.db.models.deletion.CASCADE,
                     related_name='openid_profiles', to='django_keycloak.Realm'),
-            ),
-
-            migrations.AddField(
-                model_name='client',
-                name='service_account',
-                field=models.OneToOneField(
-                    null=True, on_delete=django.db.models.deletion.CASCADE,
-                    related_name='keycloak_client', to=settings.AUTH_USER_MODEL),
             )
         ]
 
@@ -160,6 +152,14 @@ class Migration(migrations.Migration):
             field=models.OneToOneField(
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name='client', to='django_keycloak.Realm'),
+        ),
+
+        migrations.AddField(
+            model_name='client',
+            name='service_account',
+            field=models.OneToOneField(
+                null=True, on_delete=django.db.models.deletion.CASCADE,
+                related_name='keycloak_client', to=settings.AUTH_USER_MODEL),
         ),
 
         migrations.AlterUniqueTogether(
