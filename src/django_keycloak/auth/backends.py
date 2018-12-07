@@ -63,7 +63,7 @@ class KeycloakAuthorizationBase(object):
         granted_perms = self.get_all_permissions(user_obj, obj)
 
         for p in granted_perms:
-            if p['resource_set_name'] == resource and scope in p.get('scopes', {}):
+            if p['resource_set_name'] == resource and scope in p.get('scopes', {scope}):
                 return True
 
         return False
