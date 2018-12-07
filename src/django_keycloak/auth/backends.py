@@ -55,7 +55,7 @@ class KeycloakAuthorizationBase(object):
         ]
 
     def has_perm(self, user_obj, perm, obj=None):
-        resource, scope = perm.split('.', 1)
+        resource, *scope = perm.split('.', 1)
 
         if not user_obj.is_active:
             return False
