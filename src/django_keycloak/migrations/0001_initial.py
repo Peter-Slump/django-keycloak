@@ -82,16 +82,6 @@ class Migration(migrations.Migration):
         # Only add oidc_profile to user if AUTH_USER_MODEL is set,
         # Otherwise we will assume that no user model is stored in the application
         operations.append(
-            migrations.AddField(
-                model_name='openidconnectprofile',
-                name='user',
-                field=models.OneToOneField(
-                    on_delete=django.db.models.deletion.CASCADE,
-                    related_name='oidc_profile', to=settings.AUTH_USER_MODEL),
-            )
-        )
-
-        operations.append(
             migrations.CreateModel(
                 name='OpenIdConnectProfile',
                 fields=[
@@ -106,12 +96,23 @@ class Migration(migrations.Migration):
             )
         )
 
-        operations.append(migrations.AddField(
-            model_name='openidconnectprofile',
-            name='realm',
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name='openid_profiles', to='django_keycloak.Realm'),
+        operations.append(
+            migrations.AddField(
+                model_name='openidconnectprofile',
+                name='user',
+                field=models.OneToOneField(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='oidc_profile', to=settings.AUTH_USER_MODEL),
+            )
+        )
+
+        operations.append(
+            migrations.AddField(
+                model_name='openidconnectprofile',
+                name='realm',
+                field=models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='openid_profiles', to='django_keycloak.Realm'),
             )
         )
 
