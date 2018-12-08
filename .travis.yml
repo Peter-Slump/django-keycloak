@@ -6,6 +6,11 @@ python:
 env:
   - DJANGO_VERSION=1.11
   - DJANGO_VERSION=2.0
+addons:
+    sonarcloud:
+      organization: $SC_ORG
+      token: $SC_TOKEN
+
 matrix:
     exclude:
     - python: "3.3"
@@ -20,7 +25,12 @@ install:
   - python setup.py -q install
 script:
   - flake8 ./src
+  - sonar-scanner
   - python setup.py test --addopts "--cov=django_keycloak"
+
+cache:
+    directories:
+    - '$HOME/.sonar/cache'
 
 after_success:
   - pip install codecov
