@@ -64,7 +64,7 @@ class KeycloakAuthorizationBase(object):
         granted_perms = self.get_all_permissions(user_obj, obj)
 
         for p in granted_perms:
-            if p['resource_set_name'] == resource and not hasattr(p, 'scopes'):
+            if p['resource_set_name'] == resource and not p.get('scopes'):
                 return True
 
             if p['resource_set_name'] == resource and scope[0] in p.get('scopes', {}):
