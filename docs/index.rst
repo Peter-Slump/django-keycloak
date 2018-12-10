@@ -47,6 +47,19 @@ backend and middleware. Point to the correct login page.
 
     LOGIN_URL = 'keycloak_login'
 
+Also add the keycloak URL configuration:
+
+.. code-block:: python
+
+    # your-project/urls.py
+    ...
+
+    urlpatterns = [
+        ...
+        url(r'^keycloak/', include('django_keycloak.urls')),
+    ]
+
+
 Server configuration
 ====================
 
