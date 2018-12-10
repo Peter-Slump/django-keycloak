@@ -109,6 +109,7 @@ class KeycloakPasswordCredentialsBackend(KeycloakAuthorizationBase):
                     client=request.realm.client,
                     username=username,
                     password=password
+                )
         except KeycloakClientError as e:
             logger.debug('KeycloakPasswordCredentialsBackend: failed to authenticate {}'.format(e.message))
         else:
