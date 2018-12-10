@@ -8,6 +8,7 @@ from jose.exceptions import (
     JWTClaimsError,
     JWTError,
 )
+from keycloak.exceptions import KeycloakClientError
 
 import django_keycloak.services.oidc_profile
 
@@ -102,14 +103,18 @@ class KeycloakPasswordCredentialsBackend(KeycloakAuthorizationBase):
             # If request.realm does exist, but it is filled with None, we can't authenticate using Keycloak
             return None
 
-        keycloak_openid_profile = django_keycloak.services\
-            .oidc_profile.update_or_create_from_password_credentials(
-                client=request.realm.client,
-                username=username,
-                password=password
-            )
+        try:
+            keycloak_openid_profile = django_keycloak.services\
+                .oidc_profile.update_or_create_from_password_credentials(
+                    client=request.realm.client,
+                    username=username,
+                    password=password
+        except KeycloakClientError as e:
+            logger.debug('KeycloakPasswordCredentialsBackend: failed to authenticate {}'.format(e.message))
+        else:
+            return keycloak_openid_profile.user
 
-        return keycloak_openid_profile.user
+        return None
 
 
 class KeycloakIDTokenAuthorizationBackend(KeycloakAuthorizationBase):
