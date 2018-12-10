@@ -111,7 +111,7 @@ class KeycloakPasswordCredentialsBackend(KeycloakAuthorizationBase):
                     password=password
                 )
         except KeycloakClientError as e:
-            logger.debug('KeycloakPasswordCredentialsBackend: failed to authenticate {}'.format(e.message))
+            logger.debug('KeycloakPasswordCredentialsBackend: failed to authenticate.')
         else:
             return keycloak_openid_profile.user
 
