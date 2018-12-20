@@ -80,17 +80,20 @@ class Migration(migrations.Migration):
 
     if not getattr(settings, 'AUTH_ENABLE_REMOTE_USER', False):
         # Only add oidc_profile to user if AUTH_USER_MODEL is set,
-        # Otherwise we will assume that no user model is stored in the application
+        # Otherwise we will assume that no user model is stored in the
+        # application
         operations += [
             migrations.CreateModel(
                 name='OpenIdConnectProfile',
                 fields=[
-                    ('id', models.AutoField(auto_created=True, primary_key=True,
-                                            serialize=False, verbose_name='ID')),
+                    ('id',
+                     models.AutoField(auto_created=True, primary_key=True,
+                                      serialize=False, verbose_name='ID')),
                     ('access_token', models.TextField(null=True)),
                     ('expires_before', models.DateTimeField(null=True)),
                     ('refresh_token', models.TextField(null=True)),
-                    ('refresh_expires_before', models.DateTimeField(null=True)),
+                    ('refresh_expires_before',
+                     models.DateTimeField(null=True)),
                     ('sub', models.CharField(max_length=255, unique=True)),
                 ],
                 options={
@@ -111,22 +114,24 @@ class Migration(migrations.Migration):
                 name='realm',
                 field=models.ForeignKey(
                     on_delete=django.db.models.deletion.CASCADE,
-                    related_name='openid_profiles', to='django_keycloak.Realm'),
+                    related_name='openid_profiles', to='django_keycloak.Realm')
             )
         ]
 
     else:
-        # Migration operations only applicable when Remote User use-case is enabled
+        # Migration operations only applicable for Remote User use-case
         operations += [
             migrations.CreateModel(
                 name='RemoteUserOpenIdConnectProfile',
                 fields=[
-                    ('id', models.AutoField(auto_created=True, primary_key=True,
-                                            serialize=False, verbose_name='ID')),
+                    ('id',
+                     models.AutoField(auto_created=True, primary_key=True,
+                                      serialize=False, verbose_name='ID')),
                     ('access_token', models.TextField(null=True)),
                     ('expires_before', models.DateTimeField(null=True)),
                     ('refresh_token', models.TextField(null=True)),
-                    ('refresh_expires_before', models.DateTimeField(null=True)),
+                    ('refresh_expires_before',
+                     models.DateTimeField(null=True)),
                     ('sub', models.CharField(max_length=255, unique=True)),
                 ],
                 options={
@@ -139,7 +144,7 @@ class Migration(migrations.Migration):
                 name='realm',
                 field=models.ForeignKey(
                     on_delete=django.db.models.deletion.CASCADE,
-                    related_name='openid_profiles', to='django_keycloak.Realm'),
+                    related_name='openid_profiles', to='django_keycloak.Realm')
             )
         ]
 
