@@ -10,7 +10,8 @@ from django.utils import timezone
 from django.utils.module_loading import import_string
 from keycloak.exceptions import KeycloakClientError
 
-from django_keycloak.models import RemoteUserOpenIdConnectProfile, OpenIdConnectProfile
+from django_keycloak.models import RemoteUserOpenIdConnectProfile, \
+    OpenIdConnectProfile
 from django_keycloak.services.exceptions import TokensExpired
 from django_keycloak.remote_user import KeycloakRemoteUser
 
@@ -54,7 +55,8 @@ def get_or_create_from_id_token(client, id_token):
         issuer=issuer
     )
 
-    return update_or_create_user_and_oidc_profile(client=client, id_token_object=id_token_object)
+    return update_or_create_user_and_oidc_profile(
+        client=client, id_token_object=id_token_object)
 
 
 def update_or_create_user_and_oidc_profile(client, id_token_object):
@@ -66,12 +68,13 @@ def update_or_create_user_and_oidc_profile(client, id_token_object):
     """
 
     if getattr(settings, 'AUTH_ENABLE_REMOTE_USER', False):
-        oidc_profile, _ = RemoteUserOpenIdConnectProfile.objects.update_or_create(
-            sub=id_token_object['sub'],
-            defaults={
-                'realm': client.realm
-            }
-        )
+        oidc_profile, _ = RemoteUserOpenIdConnectProfile.objects.\
+            update_or_create(
+                sub=id_token_object['sub'],
+                defaults={
+                    'realm': client.realm
+                }
+            )
 
         return oidc_profile
 
@@ -115,7 +118,8 @@ def get_remote_user_from_profile(oidc_profile):
     # Get the user from the AUTH_REMOTE_USER_MODEL in the settings
     UserModel = get_remote_user_model()
 
-    # Create the object of type UserModel from the constructor of it's class as the included details can vary per model
+    # Create the object of type UserModel from the constructor of it's class
+    # as the included details can vary per model
     user = UserModel(userinfo, oidc_profile)
 
     return user
@@ -186,7 +190,8 @@ def _update_or_create(client, token_response, initiate_time):
     """
     issuer = django_keycloak.services.realm.get_issuer(client.realm)
 
-    token_response_key = 'id_token' if hasattr(token_response, 'id_token') else 'access_token'
+    token_response_key = 'id_token' if 'id_token' in token_response \
+        else 'access_token'
 
     token_object = client.openid_api_client.decode_token(
         token=token_response[token_response_key],
@@ -196,7 +201,9 @@ def _update_or_create(client, token_response, initiate_time):
         issuer=issuer
     )
 
-    oidc_profile = update_or_create_user_and_oidc_profile(client=client, id_token_object=token_object)
+    oidc_profile = update_or_create_user_and_oidc_profile(
+        client=client,
+        id_token_object=token_object)
 
     return update_tokens(token_model=oidc_profile,
                          token_response=token_response,

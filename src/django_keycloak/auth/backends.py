@@ -67,7 +67,8 @@ class KeycloakAuthorizationBase(object):
             if p['resource_set_name'] == resource and not p.get('scopes'):
                 return True
 
-            if p['resource_set_name'] == resource and scope[0] in p.get('scopes', {}):
+            if p['resource_set_name'] == resource \
+                    and scope[0] in p.get('scopes', {}):
                 return True
 
         return False
@@ -100,7 +101,8 @@ class KeycloakPasswordCredentialsBackend(KeycloakAuthorizationBase):
                 'Add BaseKeycloakMiddleware to middlewares')
 
         if not request.realm:
-            # If request.realm does exist, but it is filled with None, we can't authenticate using Keycloak
+            # If request.realm does exist, but it is filled with None, we
+            # can't authenticate using Keycloak
             return None
 
         try:
@@ -111,7 +113,8 @@ class KeycloakPasswordCredentialsBackend(KeycloakAuthorizationBase):
                     password=password
                 )
         except KeycloakClientError:
-            logger.debug('KeycloakPasswordCredentialsBackend: failed to authenticate.')
+            logger.debug('KeycloakPasswordCredentialsBackend: failed to '
+                         'authenticate.')
         else:
             return keycloak_openid_profile.user
 

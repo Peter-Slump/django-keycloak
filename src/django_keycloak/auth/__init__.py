@@ -1,4 +1,5 @@
-from django.contrib.auth import SESSION_KEY, HASH_SESSION_KEY, BACKEND_SESSION_KEY, get_user_model, _get_backends
+from django.contrib.auth import HASH_SESSION_KEY, BACKEND_SESSION_KEY, \
+    _get_backends
 from django.contrib.auth.models import AnonymousUser
 from django.middleware.csrf import rotate_token
 from django.utils import timezone
@@ -6,8 +7,8 @@ from django.utils import timezone
 from django_keycloak.models import RemoteUserOpenIdConnectProfile
 
 
-# Using a different session key than the standard django.contrib.auth to make sure there is no cross-referencing
-# between UserModel and RemoteUserModel
+# Using a different session key than the standard django.contrib.auth to
+# make sure there is no cross-referencing between UserModel and RemoteUserModel
 REMOTE_SESSION_KEY = '_auth_remote_user_id'
 
 
@@ -26,7 +27,8 @@ def get_remote_user(request):
     user = None
 
     try:
-        oidc_profile = RemoteUserOpenIdConnectProfile.objects.get(realm=request.realm, sub=sub)
+        oidc_profile = RemoteUserOpenIdConnectProfile.objects.get(
+            realm=request.realm, sub=sub)
 
         if oidc_profile.refresh_expires_before > timezone.now():
             user = oidc_profile.user
@@ -40,8 +42,8 @@ def get_remote_user(request):
 def remote_user_login(request, user, backend=None):
     """
     Creates a session for the user.
-    Based on the login function django.contrib.auth.login but uses a slightly different approach
-    since the user is not backed by a database model.
+    Based on the login function django.contrib.auth.login but uses a slightly
+    different approach since the user is not backed by a database model.
     :param request:
     :param user:
     :param backend:
@@ -81,5 +83,3 @@ def remote_user_login(request, user, backend=None):
     if hasattr(request, 'user'):
         request.user = user
     rotate_token(request)
-    # FIXME: This signal triggers some receivers that cannot handle the remote_user
-    # user_logged_in.send(sender=user.__class__, request=request, user=user)

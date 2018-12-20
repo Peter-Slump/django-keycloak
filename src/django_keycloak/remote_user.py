@@ -5,7 +5,8 @@ from django.core.exceptions import PermissionDenied
 class KeycloakRemoteUser(object):
     """
     A class based on django.contrib.auth.models.User.
-    See https://docs.djangoproject.com/en/2.0/ref/contrib/auth/#django.contrib.auth.models.User
+    See https://docs.djangoproject.com/en/2.0/ref/contrib/auth/
+    #django.contrib.auth.models.User
     """
 
     username = ''
@@ -24,7 +25,8 @@ class KeycloakRemoteUser(object):
         """
         Create KeycloakRemoteUser from userinfo and oidc_profile.
         :param dict userinfo: the userinfo as retrieved from the OIDC provider
-        :param django_keycloak.models.RemoteUserOpenIdConnectProfile oidc_profile: the related oidc_profile
+        :param django_keycloak.models.RemoteUserOpenIdConnectProfile
+        oidc_profile: the related oidc_profile
         """
         self.username = userinfo.get('preferred_username') or userinfo['sub']
         self.email = userinfo.get('email', '')
@@ -38,9 +40,8 @@ class KeycloakRemoteUser(object):
     @property
     def pk(self):
         """
-        FIXME: This is included just to be sure, but if it is not necessary with the used backend, it should be removed.
-        Since the BaseAbstractUser is a model, every instance needs a primary key.
-        The Django authentication backend requires this.
+        Since the BaseAbstractUser is a model, every instance needs a primary
+        key. The Django authentication backend requires this.
         """
         return 0
 
@@ -104,7 +105,8 @@ class KeycloakRemoteUser(object):
     def is_authenticated(self):
         """
         Read-only attribute which is always True.
-        See https://docs.djangoproject.com/en/2.0/ref/contrib/auth/#django.contrib.auth.models.User.is_authenticated
+        See https://docs.djangoproject.com/en/2.0/ref/contrib/auth/
+        #django.contrib.auth.models.User.is_authenticated
         :return:
         """
         return True
@@ -113,7 +115,8 @@ class KeycloakRemoteUser(object):
     def is_anonymous(self):
         """
         Read-only attribute which is always False.
-        See https://docs.djangoproject.com/en/2.0/ref/contrib/auth/#django.contrib.auth.models.User.is_anonymous
+        See https://docs.djangoproject.com/en/2.0/ref/contrib/auth/
+        #django.contrib.auth.models.User.is_anonymous
         :return:
         """
         return False
@@ -130,7 +133,8 @@ class KeycloakRemoteUser(object):
 
         :return: the first name and last name of the user
         """
-        return "{first} {last}".format(first=self.first_name, last=self.last_name)
+        return "{first} {last}".format(first=self.first_name,
+                                       last=self.last_name)
 
     def get_short_name(self):
         """
@@ -151,8 +155,10 @@ class KeycloakRemoteUser(object):
         """
         permissions = set()
         for backend in auth.get_backends():
-            # Excluding Django.contrib.auth backends since they are not compatible with non-db-backed permissions.
-            if hasattr(backend, "get_all_permissions") and not backend.__module__ == 'django.contrib.auth':
+            # Excluding Django.contrib.auth backends since they are not
+            # compatible with non-db-backed permissions.
+            if hasattr(backend, "get_all_permissions") \
+                    and not backend.__module__ == 'django.contrib.auth':
                 permissions.update(backend.get_all_permissions(self, obj))
         return permissions
 
@@ -193,11 +199,13 @@ class KeycloakRemoteUser(object):
         return False
 
     def email_user(self, subject, message, from_email=None, **kwargs):
-        raise NotImplementedError('This feature is not implemented by default, extend this class to implement')
+        raise NotImplementedError('This feature is not implemented by default,'
+                                  ' extend this class to implement')
 
     def save(self):
         """
         Normally implemented by django.db.models.Model
-        :raises NotImplementedError: to remind that this is not a database-backed model and should not be used like one
+        :raises NotImplementedError: to remind that this is not a
+        database-backed model and should not be used like one
         """
         raise NotImplementedError('This is not a database model')

@@ -21,5 +21,3 @@ class KeycloakAppConfig(AppConfig):
             if model._meta.swapped and not include_swapped:
                 continue
             yield model
-
-

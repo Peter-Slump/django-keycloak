@@ -226,7 +226,8 @@ class Nonce(models.Model):
 class ExchangedToken(TokenModelAbstract):
 
     oidc_profile = models.ForeignKey(
-        'django_keycloak.OpenIdConnectProfile' if not getattr(settings, 'AUTH_ENABLE_REMOTE_USER', False)
+        'django_keycloak.OpenIdConnectProfile'
+        if not getattr(settings, 'AUTH_ENABLE_REMOTE_USER', False)
         else 'django_keycloak.RemoteUserOpenIdConnectProfile',
         on_delete=models.CASCADE
     )

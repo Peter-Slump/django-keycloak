@@ -105,7 +105,7 @@ class RemoteUserAuthenticationMiddleware(MiddlewareMixin):
 
     def process_request(self, request):
         """
-        Adds user to the request when an authorized user is found in the session
+        Adds user to the request when authorized user is found in the session
         :param django.http.request.HttpRequest request: django request
         """
         request.user = SimpleLazyObject(lambda: get_user(request))
