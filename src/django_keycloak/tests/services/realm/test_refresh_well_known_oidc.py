@@ -2,7 +2,7 @@ import mock
 
 from django.test import TestCase
 
-from django_keycloak.factories import ServerFactory, RealmFactory
+from django_keycloak.factories import RealmFactory
 from django_keycloak.tests.mixins import MockTestCaseMixin
 
 import django_keycloak.services.realm
