@@ -2,8 +2,8 @@
 Django Keycloak
 ===============
 
-.. image:: https://www.travis-ci.org/Peter-Slump/django-keycloak.svg?branch=master
-   :target: https://www.travis-ci.org/Peter-Slump/django-keycloak
+.. image:: https://www.travis-ci.org/bossan/django-keycloak.svg?branch=remote-user
+   :target: https://www.travis-ci.org/bossan/django-keycloak
    :alt: Build Status
 .. image:: https://readthedocs.org/projects/django-keycloak/badge/?version=latest
    :target: http://django-keycloak.readthedocs.io/en/latest/?badge=latest
