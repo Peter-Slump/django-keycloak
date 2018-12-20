@@ -13,7 +13,7 @@ def get_realm_api_client(realm):
     """
     headers = {}
     server_url = realm.server.url
-    if realm.server.internal_url is not None:
+    if realm.server.internal_url:
         # An internal URL is configured. We add some additional settings to let
         # Keycloak think that we access it using the server_url.
         server_url = realm.server.internal_url
