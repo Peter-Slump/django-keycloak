@@ -5,7 +5,8 @@ from datetime import datetime
 from django.test import TestCase
 from keycloak.openid_connect import KeycloakOpenidConnect
 
-from django_keycloak.factories import ClientFactory, OpenIdConnectProfileFactory, UserFactory
+from django_keycloak.factories import ClientFactory, \
+    OpenIdConnectProfileFactory, UserFactory
 from django_keycloak.tests.mixins import MockTestCaseMixin
 
 import django_keycloak.services.oidc_profile
@@ -33,12 +34,15 @@ class ServicesOpenIDProfileGetOrCreateFromIdTokenTestCase(
 
     def test_create_with_new_user_new_profile(self):
         """
-        Case: oidc profile is requested based on a provided id token. The user and profile do not exist yet.
-        Expected: oidc profile and user are created with information from the id token.
+        Case: oidc profile is requested based on a provided id token.
+        The user and profile do not exist yet.
+        Expected: oidc profile and user are created with information from
+        the id token.
         """
-        profile = django_keycloak.services.oidc_profile.get_or_create_from_id_token(
-            client=self.client, id_token='some-id-token'
-        )
+        profile = django_keycloak.services.oidc_profile. \
+            get_or_create_from_id_token(
+                client=self.client, id_token='some-id-token'
+            )
 
         self.client.openid_api_client.decode_token.assert_called_with(
             token='some-id-token',
@@ -55,8 +59,10 @@ class ServicesOpenIDProfileGetOrCreateFromIdTokenTestCase(
 
     def test_update_with_existing_profile_new_user(self):
         """
-        Case: oidc profile is requested based on a provided id token. The profile exists, but the user doesn't.
-        Expected: oidc user is created with information from the id token and linked to the profile.
+        Case: oidc profile is requested based on a provided id token.
+        The profile exists, but the user doesn't.
+        Expected: oidc user is created with information from the id token
+        and linked to the profile.
         """
         existing_profile = OpenIdConnectProfileFactory(
             access_token='access-token',
@@ -65,9 +71,10 @@ class ServicesOpenIDProfileGetOrCreateFromIdTokenTestCase(
             sub='some-sub'
         )
 
-        profile = django_keycloak.services.oidc_profile.get_or_create_from_id_token(
-            client=self.client, id_token='some-id-token'
-        )
+        profile = django_keycloak.services.oidc_profile. \
+            get_or_create_from_id_token(
+                client=self.client, id_token='some-id-token'
+            )
 
         self.client.openid_api_client.decode_token.assert_called_with(
             token='some-id-token',
@@ -85,16 +92,18 @@ class ServicesOpenIDProfileGetOrCreateFromIdTokenTestCase(
 
     def test_create_with_existing_user_new_profile(self):
         """
-        Case: oidc profile is requested based on a provided id token. The user exists, but the profile doesn't.
+        Case: oidc profile is requested based on a provided id token.
+        The user exists, but the profile doesn't.
         Expected: oidc profile is created and user is linked to the profile.
         """
         existing_user = UserFactory(
             username='some-sub'
         )
 
-        profile = django_keycloak.services.oidc_profile.get_or_create_from_id_token(
-            client=self.client, id_token='some-id-token'
-        )
+        profile = django_keycloak.services.oidc_profile.\
+            get_or_create_from_id_token(
+                client=self.client, id_token='some-id-token'
+            )
 
         self.client.openid_api_client.decode_token.assert_called_with(
             token='some-id-token',
@@ -112,8 +121,10 @@ class ServicesOpenIDProfileGetOrCreateFromIdTokenTestCase(
 
     def test_create_with_existing_user_existing_profile(self):
         """
-        Case: oidc profile is requested based on a provided id token. The user and profile already exist.
-        Expected: existing oidc profile is returned with existing user linked to it.
+        Case: oidc profile is requested based on a provided id token.
+        The user and profile already exist.
+        Expected: existing oidc profile is returned with existing user linked
+        to it.
         """
         existing_user = UserFactory(
             username='some-sub'
@@ -126,9 +137,10 @@ class ServicesOpenIDProfileGetOrCreateFromIdTokenTestCase(
             sub='some-sub'
         )
 
-        profile = django_keycloak.services.oidc_profile.get_or_create_from_id_token(
-            client=self.client, id_token='some-id-token'
-        )
+        profile = django_keycloak.services.oidc_profile.\
+            get_or_create_from_id_token(
+                client=self.client, id_token='some-id-token'
+            )
 
         self.client.openid_api_client.decode_token.assert_called_with(
             token='some-id-token',
@@ -144,4 +156,3 @@ class ServicesOpenIDProfileGetOrCreateFromIdTokenTestCase(
         self.assertEqual(profile.user.email, 'test@example.com')
         self.assertEqual(profile.user.first_name, 'Some given name')
         self.assertEqual(profile.user.last_name, 'Some family name')
-
