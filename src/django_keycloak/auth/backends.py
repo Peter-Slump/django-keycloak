@@ -49,11 +49,7 @@ class KeycloakAuthorizationBase(object):
 
         logger.debug(rpt_decoded)
 
-        return [
-            permission for permission in rpt_decoded['authorization'].get(
-                'permissions', []
-            )
-        ]
+        return rpt_decoded['authorization'].get('permissions', [])
 
     def has_perm(self, user_obj, perm, obj=None):
         if '.' in perm:

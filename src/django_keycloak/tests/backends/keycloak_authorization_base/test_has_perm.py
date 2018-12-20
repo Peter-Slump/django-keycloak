@@ -14,23 +14,21 @@ class BackendsKeycloakAuthorizationBaseHasPermTestCase(
         self.profile = OpenIdConnectProfileFactory()
 
         self.setup_mock(
-            'django_keycloak.services.oidc_profile.get_entitlement',
-            return_value={
-                'authorization': {
-                    'permissions': [
-                        {
-                            'resource_set_name': 'Resource',
-                            'scopes': [
-                                'Read',
-                                'Update'
-                            ]
-                        },
-                        {
-                            'resource_set_name': 'Resource2'
-                        }
+            'django_keycloak.auth.backends.KeycloakAuthorizationBase.'
+            'get_all_permissions',
+            return_value=[
+                {
+                    'resource_set_name': 'Resource',
+                    'scopes': [
+                        'Read',
+                        'Update'
                     ]
+                },
+                {
+                    'resource_set_name': 'Resource2'
                 }
-            })
+            ]
+        )
 
     def test_resource_scope_should_have_permission(self):
         """
