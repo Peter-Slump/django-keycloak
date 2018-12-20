@@ -56,7 +56,15 @@ class KeycloakAuthorizationBase(object):
         ]
 
     def has_perm(self, user_obj, perm, obj=None):
-        resource, *scope = perm.split('.', 1)
+        if '.' in perm:
+            # Permission is formatted as <resource>.<scope>
+            # Split the permission into separate resource and scope
+            resource, scope = perm.split('.', 1)
+        else:
+            # Permission is only a resource
+            # Can't split
+            resource = perm
+            scope = ''
 
         if not user_obj.is_active:
             return False
@@ -68,7 +76,7 @@ class KeycloakAuthorizationBase(object):
                 return True
 
             if p['resource_set_name'] == resource \
-                    and scope[0] in p.get('scopes', {}):
+                    and scope in p.get('scopes', {}):
                 return True
 
         return False
