@@ -6,7 +6,7 @@ from django_keycloak.tests.mixins import MockTestCaseMixin
 import django_keycloak.services.realm
 
 
-class ServicesOpenIDProfileGetOrCreateFromIdTokenTestCase(
+class ServicesRealmGetRealmApiClientTestCase(
         MockTestCaseMixin, TestCase):
 
     def setUp(self):
