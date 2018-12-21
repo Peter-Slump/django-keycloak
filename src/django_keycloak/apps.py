@@ -10,10 +10,10 @@ class KeycloakAppConfig(AppConfig):
         self.apps.check_models_ready()
         for model in self.models.values():
             if getattr(settings, 'AUTH_ENABLE_REMOTE_USER_MODEL', False):
-                if model._meta.object_name is 'OpenIdConnectProfile':
+                if model._meta.object_name is 'RemoteUserOpenIdConnectProfile':
                     continue
             else:
-                if model._meta.object_name is 'RemoteUserOpenIdConnectProfile':
+                if model._meta.object_name is 'OpenIdConnectProfile':
                     continue
 
             if model._meta.auto_created and not include_auto_created:
