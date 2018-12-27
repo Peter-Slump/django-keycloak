@@ -25,8 +25,8 @@ install:
   - python setup.py -q install
 script:
   - flake8 ./src
-  - sonar-scanner
   - python setup.py test --addopts "--cov=django_keycloak --cov-report xml:coverage.xml"
+  - sonar-scanner
 
 cache:
     directories:
