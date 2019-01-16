@@ -49,7 +49,7 @@ class KeycloakRemoteUser(object):
         Identifier used for session storage.
         :rtype: str
         """
-        return self.oidc_profile.sub
+        return self.sub
 
     @property
     def is_staff(self):
