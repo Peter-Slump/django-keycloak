@@ -120,7 +120,7 @@ def get_remote_user_from_profile(oidc_profile):
 
     # Create the object of type UserModel from the constructor of it's class
     # as the included details can vary per model
-    user = UserModel(userinfo, oidc_profile)
+    user = UserModel(userinfo)
 
     return user
 
