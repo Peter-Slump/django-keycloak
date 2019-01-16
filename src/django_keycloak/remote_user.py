@@ -1,6 +1,8 @@
 from django.contrib import auth
 from django.core.exceptions import PermissionDenied
 
+from django_keycloak.models import RemoteUserOpenIdConnectProfile
+
 
 class KeycloakRemoteUser(object):
     """
@@ -17,25 +19,21 @@ class KeycloakRemoteUser(object):
     groups = []
     user_permissions = []
 
-    oidc_profile = None
-
     _last_login = None
 
-    def __init__(self, userinfo, oidc_profile):
+    def __init__(self, userinfo):
         """
         Create KeycloakRemoteUser from userinfo and oidc_profile.
         :param dict userinfo: the userinfo as retrieved from the OIDC provider
-        :param django_keycloak.models.RemoteUserOpenIdConnectProfile
-        oidc_profile: the related oidc_profile
         """
         self.username = userinfo.get('preferred_username') or userinfo['sub']
         self.email = userinfo.get('email', '')
         self.first_name = userinfo.get('given_name', '')
         self.last_name = userinfo.get('family_name', '')
-        self.oidc_profile = oidc_profile
+        self.sub = userinfo['sub']
 
     def __str__(self):
-        return '%s@%s' % (self.username, self.oidc_profile.realm.name)
+        return self.username
 
     @property
     def pk(self):
@@ -93,15 +91,6 @@ class KeycloakRemoteUser(object):
         self._last_login = content
 
     @property
-    def date_joined(self):
-        """
-
-        :rtype: DateTime
-        :return: the date when the remote user joined
-        """
-        return ''
-
-    @property
     def is_authenticated(self):
         """
         Read-only attribute which is always True.
@@ -123,14 +112,14 @@ class KeycloakRemoteUser(object):
 
     def get_username(self):
         """
-
-        :return: the username of the user
+        Get the username
+        :return: username
         """
         return self.username
 
     def get_full_name(self):
         """
-
+        Get the full name (first name + last name) of the user.
         :return: the first name and last name of the user
         """
         return "{first} {last}".format(first=self.first_name,
@@ -138,10 +127,22 @@ class KeycloakRemoteUser(object):
 
     def get_short_name(self):
         """
-
-        :return: the first name of the user
+        Get the first name of the user.
+        :return: first name
         """
         return self.first_name
+
+    @property
+    def profile(self):
+        """
+        Get the related OIDC Profile for this user.
+        :rtype: django_keycloak.models.RemoteUserOpenIdConnectProfile
+        :return: OpenID Connect Profile
+        """
+        try:
+            return RemoteUserOpenIdConnectProfile.objects.get(sub=self.sub)
+        except RemoteUserOpenIdConnectProfile.DoesNotExist:
+            return None
 
     def get_group_permissions(self, obj=None):
         pass
