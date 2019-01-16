@@ -97,7 +97,7 @@ class Logout(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         if hasattr(self.request.user, 'oidc_profile'):
             self.request.realm.client.openid_api_client.logout(
-                self.request.user.profile.refresh_token
+                self.request.user.get_profile().refresh_token
             )
         logout(self.request)
 

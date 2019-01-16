@@ -132,18 +132,6 @@ class KeycloakRemoteUser(object):
         """
         return self.first_name
 
-    @property
-    def profile(self):
-        """
-        Get the related OIDC Profile for this user.
-        :rtype: django_keycloak.models.RemoteUserOpenIdConnectProfile
-        :return: OpenID Connect Profile
-        """
-        try:
-            return RemoteUserOpenIdConnectProfile.objects.get(sub=self.sub)
-        except RemoteUserOpenIdConnectProfile.DoesNotExist:
-            return None
-
     def get_group_permissions(self, obj=None):
         pass
 
@@ -162,6 +150,17 @@ class KeycloakRemoteUser(object):
                     and not backend.__module__ == 'django.contrib.auth':
                 permissions.update(backend.get_all_permissions(self, obj))
         return permissions
+
+    def get_profile(self):
+        """
+        Get the related OIDC Profile for this user.
+        :rtype: django_keycloak.models.RemoteUserOpenIdConnectProfile
+        :return: OpenID Connect Profile
+        """
+        try:
+            return RemoteUserOpenIdConnectProfile.objects.get(sub=self.sub)
+        except RemoteUserOpenIdConnectProfile.DoesNotExist:
+            return None
 
     def has_perm(self, perm, obj=None):
         """
