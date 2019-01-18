@@ -45,7 +45,7 @@ class KeycloakAuthorizationBase(object):
             return set()
 
         rpt_decoded = django_keycloak.services.oidc_profile\
-            .get_entitlement(oidc_profile=user_obj.oidc_profile)
+            .get_entitlement(oidc_profile=user_obj.get_profile())
 
         logger.debug(rpt_decoded)
 
