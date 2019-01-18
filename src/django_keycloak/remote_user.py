@@ -151,7 +151,8 @@ class KeycloakRemoteUser(object):
                 permissions.update(backend.get_all_permissions(self, obj))
         return permissions
 
-    def get_profile(self):
+    @property
+    def oidc_profile(self):
         """
         Get the related OIDC Profile for this user.
         :rtype: django_keycloak.models.RemoteUserOpenIdConnectProfile

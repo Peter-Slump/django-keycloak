@@ -41,11 +41,11 @@ class KeycloakAuthorizationBase(object):
         return user_obj._keycloak_perm_cache
 
     def get_keycloak_permissions(self, user_obj):
-        if not hasattr(user_obj, 'get_profile'):
+        if not hasattr(user_obj, 'oidc_profile'):
             return set()
 
         rpt_decoded = django_keycloak.services.oidc_profile\
-            .get_entitlement(oidc_profile=user_obj.get_profile())
+            .get_entitlement(oidc_profile=user_obj.oidc_profile)
 
         logger.debug(rpt_decoded)
 
