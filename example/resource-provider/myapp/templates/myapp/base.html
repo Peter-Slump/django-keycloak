@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <style>
+        body { padding-top: 70px; }
+    </style>
+
+    <title>Keycloak authentication</title>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                      <a class="navbar-brand" href="{% url 'index' %}">Keycloak Demo</a>
+                </div>
+                {% if user.is_authenticated %}
+                <p class="navbar-text navbar-right">
+                    Signed in as {{ user.get_full_name }}
+                    {% if user.oidc_profile %}| <a href="{{ user.oidc_profile.realm.server.url }}/auth/realms/{{ user.oidc_profile.realm.name }}/account/">Manage Profile</a>{% endif %}
+                    | <a href="{% url 'keycloak_logout' %}">Logout</a>
+                </p>
+                {% else %}
+                <a class="btn btn-default navbar-btn navbar-right" href="{% url 'keycloak_login' %}">Sign in</a>
+                {% endif%}
+
+            </div>
+        </nav>
+    </div>
+    <div class="row">
+        {% block main %}{% endblock %}
+    </div>
+</div>
+{% include 'django_keycloak/includes/session_iframe_support.html' %}
+</body>
+</html>

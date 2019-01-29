@@ -1,0 +1,18 @@
+{% extends 'myapp/base.html' %}
+
+{% block main %}
+<ul class="list-unstyled">
+    <li>
+        <a href="{% url 'secured' %}">secured area</a>
+    </li>
+    <li>
+        <a href="{% url 'permission' %}">Page requiring permission named: "some-permission"</a>
+    </li>
+    {% if user.is_authenticated and user.oidc_profile %}
+    <li>
+        <a href="{{ user.oidc_profile.realm.server.url }}/auth/admin/{{ user.oidc_profile.realm.name }}/console/index.html">Management console for REALM "{{ user.oidc_profile.realm.name }}"</a>
+    </li>
+    {% endif %}
+</ul>
+</p>
+{% endblock %}

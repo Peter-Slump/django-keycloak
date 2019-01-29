@@ -1,0 +1,19 @@
+{% extends 'myapp/base.html' %}
+
+{% block main %}
+<h1>Secured area</h1>
+<p>
+    <strong>Available permissions:</strong>
+    <ul>
+        {% for perm in permissions %}
+        <li>{{ perm }}</li>
+        {% endfor%}
+    </ul>
+
+    <strong>JWT:</strong><br />
+    <pre>{{ jwt }}</pre>
+
+    <strong>API call result:</strong><br />
+    <pre>{{ api_result }}</pre>
+</p>
+{% endblock %}

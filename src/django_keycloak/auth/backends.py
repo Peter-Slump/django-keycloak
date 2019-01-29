@@ -46,8 +46,6 @@ class KeycloakAuthorizationBase(object):
         rpt_decoded = django_keycloak.services.oidc_profile\
             .get_decoded_jwt(oidc_profile=user_obj.oidc_profile)
 
-        logger.debug(rpt_decoded)
-
         return [
             role for role in rpt_decoded['resource_access'].get(
                 user_obj.oidc_profile.realm.client.client_id,
