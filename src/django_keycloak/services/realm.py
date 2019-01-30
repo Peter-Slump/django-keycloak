@@ -1,3 +1,4 @@
+from django.conf import settings
 from keycloak.realm import KeycloakRealm
 
 try:
@@ -23,8 +24,13 @@ def get_realm_api_client(realm):
         if parsed_url.scheme == 'https':
             headers['X-Forwarded-Proto'] = 'https'
 
-    return KeycloakRealm(server_url=server_url, realm_name=realm.name,
-                         headers=headers)
+    realm_client = KeycloakRealm(server_url=server_url, realm_name=realm.name,
+                                 headers=headers)
+
+    if settings.DEBUG and getattr(settings, 'KEYCLOAK_SKIP_SSL_VERIFY', False):
+        realm_client.client.session.verify = False
+
+    return realm_client
 
 
 def refresh_certs(realm):
@@ -47,10 +53,16 @@ def refresh_well_known_oidc(realm):
     server_url = realm.server.internal_url or realm.server.url
 
     # While fetching the well_known we should not use the prepared URL
-    openid_api_client = KeycloakRealm(
+    realm_client = KeycloakRealm(
         server_url=server_url,
         realm_name=realm.name
-    ).open_id_connect(client_id='', client_secret='')
+    )
+
+    if settings.DEBUG and getattr(settings, 'KEYCLOAK_SKIP_SSL_VERIFY', False):
+        realm_client.client.session.verify = False
+
+    openid_api_client = realm_client.open_id_connect(client_id='',
+                                                     client_secret='')
 
     realm.well_known_oidc = openid_api_client.well_known.contents
     realm.save(update_fields=['_well_known_oidc'])

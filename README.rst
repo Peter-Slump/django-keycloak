@@ -21,6 +21,8 @@ Django app to add Keycloak  support to your project.
 
 http://www.keycloak.org/
 
+An showcase/demo project is added in the `example folder <example/README.md>`_.
+
 Development
 ===========
 
