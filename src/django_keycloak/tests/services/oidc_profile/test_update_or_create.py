@@ -111,7 +111,7 @@ class ServicesKeycloakOpenIDProfileUpdateOrCreateTestCase(MockTestCaseMixin,
         )
 
         profile.refresh_from_db()
-        self.assertEqual(profile.sub, 'some-sub'),
+        self.assertEqual(profile.sub, 'some-sub')
         self.assertEqual(profile.access_token, 'access-token')
         self.assertEqual(profile.refresh_token, 'refresh-token')
         self.assertEqual(profile.expires_before, datetime(
