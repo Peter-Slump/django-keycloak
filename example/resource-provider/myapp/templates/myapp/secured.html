@@ -10,10 +10,17 @@
         {% endfor%}
     </ul>
 
-    <strong>JWT:</strong><br />
+    <h4>JWT:</h4>
+    <p>
+        Below you can find the contents of the <code>access_token</code> JWT (JSON Web Token).
+        You can also inspect the token on <a href="https://jwt.io/#debugger-io?token={{ access_token }}" target="_blank">jwt.io</a>
+    </p>
     <pre>{{ jwt }}</pre>
 
-    <strong>API call result:</strong><br />
+    <h4>API call result:</h4>
+    <p>
+        The application made a request to the <a href="https://resource-provider-api.localhost.yarf.nl/" target="_blank">resource-provider-api</a>. The local access token is exchanged for a token which is valid for the client configured in this application. Please read more about token exchange in the <a href="https://www.keycloak.org/docs/3.4/securing_apps/index.html#_token-exchange" target="_blank">Keycloak documentation</a>.
+    </p>
     <pre>{{ api_result }}</pre>
 </p>
 {% endblock %}

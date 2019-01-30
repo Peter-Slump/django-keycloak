@@ -54,6 +54,7 @@ class Secured(LoginRequiredMixin, TemplateView):
 
         return super(Secured, self).get_context_data(
             permissions=self.request.user.get_all_permissions(),
+            access_token=self.request.user.oidc_profile.access_token,
             api_result=api_result,
             jwt=json.dumps(jwt, sort_keys=True, indent=4, separators=(',', ': ')) if jwt else None,
             op_location=self.request.realm.well_known_oidc['check_session_iframe'],

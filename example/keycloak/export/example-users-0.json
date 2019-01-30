@@ -15,6 +15,7 @@
     "realmRoles" : [ "offline_access", "uma_authorization" ],
     "clientRoles" : {
       "resource-provider" : [ "uma_protection" ],
+      "realm-management" : [ "manage-clients" ],
       "account" : [ "manage-account", "view-profile" ]
     },
     "notBefore" : 0,
@@ -64,6 +65,8 @@
     "requiredActions" : [ ],
     "realmRoles" : [ "offline_access", "uma_authorization" ],
     "clientRoles" : {
+      "resource-provider" : [ "some-permission" ],
+      "realm-management" : [ "manage-users" ],
       "account" : [ "manage-account", "view-profile" ]
     },
     "notBefore" : 0,

@@ -3,16 +3,20 @@
 {% block main %}
 <ul class="list-unstyled">
     <li>
-        <a href="{% url 'secured' %}">secured area</a>
+        <a href="{% url 'secured' %}">Secured area</a> <span class="text-muted">login required</span>
     </li>
     <li>
-        <a href="{% url 'permission' %}">Page requiring permission named: "some-permission"</a>
+        <a href="{% url 'permission' %}">Secured area requiring permission</a> <span class="text-muted">resource-provider/some-permission role is required for authenticated user</span>
     </li>
     {% if user.is_authenticated and user.oidc_profile %}
     <li>
-        <a href="{{ user.oidc_profile.realm.server.url }}/auth/admin/{{ user.oidc_profile.realm.name }}/console/index.html">Management console for REALM "{{ user.oidc_profile.realm.name }}"</a>
+        <a href="{{ user.oidc_profile.realm.server.url }}/auth/admin/{{ user.oidc_profile.realm.name }}/console/index.html">Management console for REALM "{{ user.oidc_profile.realm.name }}"</a> <span class="text-muted">realm-management/manage-users role is required for authenticated user</span>
     </li>
+    {% else %}
+
     {% endif %}
 </ul>
-</p>
+{% if not user.is_authenticated %}
+<p>Login with username: <code>testuser</code> and password: <code>password</code>.</p>
+{% endif %}
 {% endblock %}
