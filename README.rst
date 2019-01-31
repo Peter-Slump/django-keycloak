@@ -21,6 +21,8 @@ Django app to add Keycloak  support to your project.
 
 http://www.keycloak.org/
 
+An showcase/demo project is added in the `example folder <example/README.md>`_.
+
 Development
 ===========
 
@@ -52,3 +54,27 @@ Run the container
 
 Go in the browser to http://localhost:8050 and view the documentation which get
 refreshed and updated on every update in the documentation source.
+
+--------------
+Create release
+--------------
+
+.. code:: bash
+
+    $ git checkout master
+    $ git pull
+    $ bumpversion release
+    $ make deploy-pypi
+    $ bumpversion --no-tag patch
+    $ git push origin master --tags
+
+Release Notes
+=============
+
+**unreleased**
+
+* Correctly extract email field name on UserModel (thanks to @swist)
+* Add support for Oauth2 Token Exchange to exchange tokens with remote clients.
+  Handy when using multiple applications with different clients which have to
+  communicate with each other.
+* Support for session iframe

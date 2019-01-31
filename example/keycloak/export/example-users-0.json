@@ -1,0 +1,75 @@
+{
+  "realm" : "example",
+  "users" : [ {
+    "id" : "a39d3fb5-6e11-47c5-a48e-50e254804f98",
+    "createdTimestamp" : 1548797565484,
+    "username" : "service-account-resource-provider",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "email" : "service-account-resource-provider@placeholder.org",
+    "serviceAccountClientId" : "resource-provider",
+    "credentials" : [ ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "offline_access", "uma_authorization" ],
+    "clientRoles" : {
+      "resource-provider" : [ "uma_protection" ],
+      "realm-management" : [ "manage-clients" ],
+      "account" : [ "manage-account", "view-profile" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "7ef9e62d-6674-4ca2-9d8c-593ee3519c33",
+    "createdTimestamp" : 1548797581171,
+    "username" : "service-account-resource-provider-api",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "email" : "service-account-resource-provider-api@placeholder.org",
+    "serviceAccountClientId" : "resource-provider-api",
+    "credentials" : [ ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "offline_access", "uma_authorization" ],
+    "clientRoles" : {
+      "resource-provider-api" : [ "uma_protection" ],
+      "account" : [ "manage-account", "view-profile" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "483bfd18-32fb-4666-9fed-48cabc376498",
+    "createdTimestamp" : 1548798984518,
+    "username" : "testuser",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "John",
+    "lastName" : "Doe",
+    "email" : "john@example.com",
+    "credentials" : [ {
+      "type" : "password",
+      "hashedSaltedValue" : "qhYpBE+XIEwcnZ1Db3UuNlYypzajnn71g6g3nTupnmG0QCAIb8pykNGyumdZB4GFVltCAX0d+m+pEz5zSM+1Ig==",
+      "salt" : "/ixUwYokI9O3iHeFe30BIA==",
+      "hashIterations" : 27500,
+      "counter" : 0,
+      "algorithm" : "pbkdf2-sha256",
+      "digits" : 0,
+      "period" : 0,
+      "createdDate" : 1548798995962,
+      "config" : { }
+    } ],
+    "disableableCredentialTypes" : [ "password" ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "offline_access", "uma_authorization" ],
+    "clientRoles" : {
+      "resource-provider" : [ "some-permission" ],
+      "realm-management" : [ "manage-users" ],
+      "account" : [ "manage-account", "view-profile" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  } ]
+}

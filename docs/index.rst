@@ -47,6 +47,19 @@ backend and middleware. Point to the correct login page.
 
     LOGIN_URL = 'keycloak_login'
 
+Also add the keycloak URL configuration:
+
+.. code-block:: python
+
+    # your-project/urls.py
+    ...
+
+    urlpatterns = [
+        ...
+        url(r'^keycloak/', include('django_keycloak.urls')),
+    ]
+
+
 Server configuration
 ====================
 
@@ -122,6 +135,9 @@ Synchronize permissions
 This Django Admin action which can be triggered for a realm synchronizes all
 available permission to Keycloak. In keycloak the permissions will get
 registered as roles. These roles can be added to a user.
+
+For this feature the service account should have the
+realm-management/manage-clients role assigned.
 
 --------
 Add user

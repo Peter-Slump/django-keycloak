@@ -47,8 +47,6 @@ class KeycloakAuthorizationBase(object):
         rpt_decoded = django_keycloak.services.oidc_profile\
             .get_entitlement(oidc_profile=user_obj.oidc_profile)
 
-        logger.debug(rpt_decoded)
-
         return rpt_decoded['authorization'].get('permissions', [])
 
     def has_perm(self, user_obj, perm, obj=None):

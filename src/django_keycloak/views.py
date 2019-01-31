@@ -99,6 +99,17 @@ class Logout(RedirectView):
             self.request.realm.client.openid_api_client.logout(
                 self.request.user.get_profile().refresh_token
             )
+            self.request.user.oidc_profile.access_token = None
+            self.request.user.oidc_profile.expires_before = None
+            self.request.user.oidc_profile.refresh_token = None
+            self.request.user.oidc_profile.refresh_expires_before = None
+            self.request.user.oidc_profile.save(update_fields=[
+                'access_token',
+                'expires_before',
+                'refresh_token',
+                'refresh_expires_before'
+            ])
+
         logout(self.request)
 
         if settings.LOGOUT_REDIRECT_URL:
@@ -113,11 +124,13 @@ class SessionIframe(TemplateView):
     @property
     def op_location(self):
         realm = self.request.realm
-        return realm.well_known_oidc['check_session_iframe'].replace(
-            realm.server.internal_url,
-            realm.server.url,
-            1
-        )
+        if realm.server.internal_url:
+            return realm.well_known_oidc['check_session_iframe'].replace(
+                realm.server.internal_url,
+                realm.server.url,
+                1
+            )
+        return realm.server.url
 
     @property
     def client_id(self):
