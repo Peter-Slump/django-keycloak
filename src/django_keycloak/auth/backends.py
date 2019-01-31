@@ -8,6 +8,7 @@ from jose.exceptions import (
     JWTClaimsError,
     JWTError,
 )
+from keycloak.exceptions import KeycloakClientError
 
 import django_keycloak.services.oidc_profile
 
@@ -26,7 +27,7 @@ class KeycloakAuthorizationBase(object):
         except UserModel.DoesNotExist:
             return None
 
-        if user.oidc_profile.refresh_expires_before > timezone.now():
+        if user.get_profile().refresh_expires_before > timezone.now():
             return user
 
         return None
@@ -44,19 +45,35 @@ class KeycloakAuthorizationBase(object):
             return set()
 
         rpt_decoded = django_keycloak.services.oidc_profile\
-            .get_decoded_jwt(oidc_profile=user_obj.oidc_profile)
+            .get_entitlement(oidc_profile=user_obj.oidc_profile)
 
-        return [
-            role for role in rpt_decoded['resource_access'].get(
-                user_obj.oidc_profile.realm.client.client_id,
-                {'roles': []}
-            )['roles']
-        ]
+        return rpt_decoded['authorization'].get('permissions', [])
 
     def has_perm(self, user_obj, perm, obj=None):
+        if '.' in perm:
+            # Permission is formatted as <resource>.<scope>
+            # Split the permission into separate resource and scope
+            resource, scope = perm.split('.', 1)
+        else:
+            # Permission is only a resource
+            # Can't split
+            resource = perm
+            scope = ''
+
         if not user_obj.is_active:
             return False
-        return perm in self.get_all_permissions(user_obj, obj)
+
+        granted_perms = self.get_all_permissions(user_obj, obj)
+
+        for p in granted_perms:
+            if p['resource_set_name'] == resource and not p.get('scopes'):
+                return True
+
+            if p['resource_set_name'] == resource \
+                    and scope in p.get('scopes', {}):
+                return True
+
+        return False
 
 
 class KeycloakAuthorizationCodeBackend(KeycloakAuthorizationBase):
@@ -75,6 +92,35 @@ class KeycloakAuthorizationCodeBackend(KeycloakAuthorizationBase):
             )
 
         return keycloak_openid_profile.user
+
+
+class KeycloakPasswordCredentialsBackend(KeycloakAuthorizationBase):
+
+    def authenticate(self, request, username, password):
+
+        if not hasattr(request, 'realm'):
+            raise ImproperlyConfigured(
+                'Add BaseKeycloakMiddleware to middlewares')
+
+        if not request.realm:
+            # If request.realm does exist, but it is filled with None, we
+            # can't authenticate using Keycloak
+            return None
+
+        try:
+            keycloak_openid_profile = django_keycloak.services\
+                .oidc_profile.update_or_create_from_password_credentials(
+                    client=request.realm.client,
+                    username=username,
+                    password=password
+                )
+        except KeycloakClientError:
+            logger.debug('KeycloakPasswordCredentialsBackend: failed to '
+                         'authenticate.')
+        else:
+            return keycloak_openid_profile.user
+
+        return None
 
 
 class KeycloakIDTokenAuthorizationBackend(KeycloakAuthorizationBase):

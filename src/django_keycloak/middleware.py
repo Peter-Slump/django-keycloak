@@ -6,6 +6,7 @@ from django.utils.deprecation import MiddlewareMixin
 from django.utils.functional import SimpleLazyObject
 
 from django_keycloak.models import Realm
+from django_keycloak.auth import get_remote_user
 from django_keycloak.response import HttpResponseNotAuthorized
 
 
@@ -13,6 +14,12 @@ def get_realm(request):
     if not hasattr(request, '_cached_realm'):
         request._cached_realm = Realm.objects.first()
     return request._cached_realm
+
+
+def get_user(request):
+    if not hasattr(request, '_cached_user'):
+        request._cached_user = get_remote_user(request)
+    return request._cached_user
 
 
 class BaseKeycloakMiddleware(MiddlewareMixin):
@@ -39,7 +46,7 @@ class BaseKeycloakMiddleware(MiddlewareMixin):
                 or not hasattr(request.user, 'oidc_profile'):
             return response
 
-        jwt = request.user.oidc_profile.jwt
+        jwt = request.user.get_profile().jwt
         if not jwt:
             return response
 
@@ -50,7 +57,7 @@ class BaseKeycloakMiddleware(MiddlewareMixin):
         # expires.
         response.set_cookie(
             cookie_name, value=jwt['session_state'],
-            expires=request.user.oidc_profile.refresh_expires_before,
+            expires=request.user.get_profile().refresh_expires_before,
             httponly=False
         )
 
@@ -91,3 +98,14 @@ class KeycloakStatelessBearerAuthenticationMiddleware(BaseKeycloakMiddleware):
                 attributes={'realm': request.realm.name})
         else:
             request.user = user
+
+
+class RemoteUserAuthenticationMiddleware(MiddlewareMixin):
+    set_session_state_cookie = False
+
+    def process_request(self, request):
+        """
+        Adds user to the request when authorized user is found in the session
+        :param django.http.request.HttpRequest request: django request
+        """
+        request.user = SimpleLazyObject(lambda: get_user(request))

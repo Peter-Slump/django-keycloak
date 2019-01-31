@@ -24,6 +24,7 @@ from django.views.generic.base import (
 )
 
 from django_keycloak.models import Nonce
+from django_keycloak.auth import remote_user_login
 
 
 logger = logging.getLogger(__name__)
@@ -80,7 +81,11 @@ class LoginComplete(RedirectView):
         user = authenticate(request=request,
                             code=request.GET['code'],
                             redirect_uri=nonce.redirect_uri)
-        login(request, user)
+
+        if getattr(settings, 'AUTH_ENABLE_REMOTE_USER', False):
+            remote_user_login(request, user)
+        else:
+            login(request, user)
 
         nonce.delete()
 
@@ -92,7 +97,7 @@ class Logout(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         if hasattr(self.request.user, 'oidc_profile'):
             self.request.realm.client.openid_api_client.logout(
-                self.request.user.oidc_profile.refresh_token
+                self.request.user.get_profile().refresh_token
             )
             self.request.user.oidc_profile.access_token = None
             self.request.user.oidc_profile.expires_before = None

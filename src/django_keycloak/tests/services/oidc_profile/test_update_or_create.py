@@ -36,8 +36,6 @@ class ServicesKeycloakOpenIDProfileUpdateOrCreateTestCase(MockTestCaseMixin,
         }
         self.client.openid_api_client.decode_token.return_value = {
             'sub': 'some-sub',
-        }
-        self.client.openid_api_client.userinfo.return_value = {
             'email': 'test@example.com',
             'given_name': 'Some given name',
             'family_name': 'Some family name'
