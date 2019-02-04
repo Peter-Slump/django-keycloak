@@ -15,13 +15,18 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='RemoteUserOpenIdConnectProfile',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
                 ('access_token', models.TextField(null=True)),
                 ('expires_before', models.DateTimeField(null=True)),
                 ('refresh_token', models.TextField(null=True)),
                 ('refresh_expires_before', models.DateTimeField(null=True)),
                 ('sub', models.CharField(max_length=255, unique=True)),
-                ('realm', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='openid_profiles', to='django_keycloak.Realm')),
+                ('realm', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='openid_profiles',
+                    to='django_keycloak.Realm'
+                )),
             ],
             options={
                 'abstract': False,
@@ -31,6 +36,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='exchangedtoken',
             name='oidc_profile',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.KEYCLOAK_OIDC_PROFILE_MODEL),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to=settings.KEYCLOAK_OIDC_PROFILE_MODEL
+            ),
         ),
     ]
