@@ -52,6 +52,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     'django_keycloak.middleware.KeycloakStatelessBearerAuthenticationMiddleware',
+    'django_keycloak.middleware.RemoteUserAuthenticationMiddleware',
 ]
 
 PASSWORD_HASHERS = [
@@ -113,6 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_ENABLE_REMOTE_USER_MODEL = True
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/

@@ -78,7 +78,7 @@ class Migration(migrations.Migration):
         ),
     ]
 
-    if not getattr(settings, 'AUTH_ENABLE_REMOTE_USER', False):
+    if not getattr(settings, 'AUTH_ENABLE_REMOTE_USER_MODEL', False):
         # Only add oidc_profile to user if AUTH_USER_MODEL is set,
         # Otherwise we will assume that no user model is stored in the
         # application

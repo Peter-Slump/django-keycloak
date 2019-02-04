@@ -46,7 +46,7 @@ class BaseKeycloakMiddleware(MiddlewareMixin):
                 or not hasattr(request.user, 'oidc_profile'):
             return response
 
-        jwt = request.user.get_profile().jwt
+        jwt = request.user.oidc_profile.jwt
         if not jwt:
             return response
 
@@ -57,7 +57,7 @@ class BaseKeycloakMiddleware(MiddlewareMixin):
         # expires.
         response.set_cookie(
             cookie_name, value=jwt['session_state'],
-            expires=request.user.get_profile().refresh_expires_before,
+            expires=request.user.oidc_profile.refresh_expires_before,
             httponly=False
         )
 

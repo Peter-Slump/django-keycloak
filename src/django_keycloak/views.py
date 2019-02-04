@@ -64,6 +64,8 @@ class LoginComplete(RedirectView):
 
     def get(self, *args, **kwargs):
         request = self.request
+        print('Login Complete')
+
 
         if 'error' in request.GET:
             return HttpResponseServerError(request.GET['error'])
@@ -82,12 +84,18 @@ class LoginComplete(RedirectView):
                             code=request.GET['code'],
                             redirect_uri=nonce.redirect_uri)
 
-        if getattr(settings, 'AUTH_ENABLE_REMOTE_USER', False):
+        print('Authenticated user:', user)
+        if getattr(settings, 'AUTH_ENABLE_REMOTE_USER_MODEL', False):
+            print('Authenticated user:', user)
             remote_user_login(request, user)
         else:
+            print('Gewone login!!!!???', user)
             login(request, user)
 
         nonce.delete()
+
+        import sys
+        sys.stdout.flush()
 
         return HttpResponseRedirect(nonce.next_path or '/')
 
@@ -97,7 +105,7 @@ class Logout(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         if hasattr(self.request.user, 'oidc_profile'):
             self.request.realm.client.openid_api_client.logout(
-                self.request.user.get_profile().refresh_token
+                self.request.user.oidc_profile.refresh_token
             )
             self.request.user.oidc_profile.access_token = None
             self.request.user.oidc_profile.expires_before = None

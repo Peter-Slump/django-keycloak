@@ -150,38 +150,7 @@ class TokenModelAbstract(models.Model):
         return self.expires_before > timezone.now()
 
 
-class OpenIdConnectProfile(TokenModelAbstract):
-
-    sub = models.CharField(max_length=255, unique=True)
-
-    realm = models.ForeignKey('django_keycloak.Realm',
-                              related_name='openid_profiles',
-                              on_delete=models.CASCADE)
-
-    user = models.OneToOneField(settings.AUTH_USER_MODEL,
-                                related_name='oidc_profile',
-                                on_delete=models.CASCADE)
-
-    class Meta(object):
-        db_table = 'django_keycloak_openidconnectprofile'
-
-    @property
-    def jwt(self):
-        """
-        :rtype: dict
-        """
-        if not self.is_active:
-            return None
-        client = self.realm.client
-        return client.openid_api_client.decode_token(
-            token=self.access_token,
-            key=client.realm.certs,
-            algorithms=client.openid_api_client.well_known[
-                'id_token_signing_alg_values_supported']
-        )
-
-
-class RemoteUserOpenIdConnectProfile(TokenModelAbstract):
+class OpenIdConnectProfileAbstract(TokenModelAbstract):
 
     sub = models.CharField(max_length=255, unique=True)
 
@@ -190,7 +159,8 @@ class RemoteUserOpenIdConnectProfile(TokenModelAbstract):
                               on_delete=models.CASCADE)
 
     class Meta(object):
-        db_table = 'django_keycloak_openidconnectprofile'
+        abstract = True
+
 
     @cached_property
     def user(self):
@@ -216,6 +186,22 @@ class RemoteUserOpenIdConnectProfile(TokenModelAbstract):
         )
 
 
+class RemoteUserOpenIdConnectProfile(OpenIdConnectProfileAbstract):
+
+    class Meta(OpenIdConnectProfileAbstract.Meta):
+        swappable = 'KEYCLOAK_OIDC_PROFILE_MODEL'
+
+
+class OpenIdConnectProfile(OpenIdConnectProfileAbstract):
+
+    user = models.OneToOneField(settings.AUTH_USER_MODEL,
+                                related_name='oidc_profile',
+                                on_delete=models.CASCADE)
+
+    class Meta(RemoteUserOpenIdConnectProfile.Meta):
+        swappable = 'KEYCLOAK_OIDC_PROFILE_MODEL'
+
+
 class Nonce(models.Model):
 
     state = models.UUIDField(default=uuid.uuid4, unique=True)
@@ -226,9 +212,7 @@ class Nonce(models.Model):
 class ExchangedToken(TokenModelAbstract):
 
     oidc_profile = models.ForeignKey(
-        'django_keycloak.OpenIdConnectProfile'
-        if not getattr(settings, 'AUTH_ENABLE_REMOTE_USER', False)
-        else 'django_keycloak.RemoteUserOpenIdConnectProfile',
+        settings.KEYCLOAK_OIDC_PROFILE_MODEL,
         on_delete=models.CASCADE
     )
     remote_client = models.ForeignKey('django_keycloak.RemoteClient',

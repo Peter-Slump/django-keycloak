@@ -67,7 +67,7 @@ def update_or_create_user_and_oidc_profile(client, id_token_object):
     :return:
     """
 
-    if getattr(settings, 'AUTH_ENABLE_REMOTE_USER', False):
+    if getattr(settings, 'AUTH_ENABLE_REMOTE_USER_MODEL', False):
         oidc_profile, _ = RemoteUserOpenIdConnectProfile.objects.\
             update_or_create(
                 sub=id_token_object['sub'],
