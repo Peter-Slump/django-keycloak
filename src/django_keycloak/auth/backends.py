@@ -47,7 +47,16 @@ class KeycloakAuthorizationBase(object):
         rpt_decoded = django_keycloak.services.oidc_profile\
             .get_entitlement(oidc_profile=user_obj.oidc_profile)
 
-        return rpt_decoded['authorization'].get('permissions', [])
+        permissions = []
+        for p in rpt_decoded['authorization'].get('permissions', []):
+            if 'scope' in p:
+                for scope in p['scope']:
+                    permissions.append('{}.{}'.format(p['resource_set_name'],
+                                                      scope))
+            else:
+                permissions.append(p['resource_set_name'])
+
+        return permissions
 
     def has_perm(self, user_obj, perm, obj=None):
         if '.' in perm:
@@ -58,20 +67,16 @@ class KeycloakAuthorizationBase(object):
             # Permission is only a resource
             # Can't split
             resource = perm
-            scope = ''
 
         if not user_obj.is_active:
             return False
 
         granted_perms = self.get_all_permissions(user_obj, obj)
 
-        for p in granted_perms:
-            if p['resource_set_name'] == resource and not p.get('scopes'):
-                return True
-
-            if p['resource_set_name'] == resource \
-                    and scope in p.get('scopes', {}):
-                return True
+        if perm in granted_perms:
+            return True
+        elif resource in granted_perms:
+            return True
 
         return False
 
@@ -147,7 +152,7 @@ class KeycloakIDTokenAuthorizationBackend(KeycloakAuthorizationBase):
                          % str(e))
         except JWTError:
             # The signature is invalid in any way.
-            logger.debug('eycloakBearerAuthorizationBackend: failed to '
+            logger.debug('KeycloakBearerAuthorizationBackend: failed to '
                          'authenticate due to a malformed access token.')
         else:
             return oidc_profile.user

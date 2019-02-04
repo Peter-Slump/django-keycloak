@@ -45,6 +45,10 @@ class Migration(migrations.Migration):
                 ('refresh_expires_before', models.DateTimeField(null=True)),
                 ('sub', models.CharField(max_length=255, unique=True)),
             ],
+            options={
+                'abstract': False,
+                'swappable': 'KEYCLOAK_OIDC_PROFILE_MODEL',
+            },
         ),
         migrations.CreateModel(
             name='Realm',

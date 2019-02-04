@@ -147,7 +147,7 @@ class KeycloakRemoteUser(object):
             # Excluding Django.contrib.auth backends since they are not
             # compatible with non-db-backed permissions.
             if hasattr(backend, "get_all_permissions") \
-                    and not backend.__module__ == 'django.contrib.auth':
+                    and not backend.__module__.startswith('django.contrib.auth'):
                 permissions.update(backend.get_all_permissions(self, obj))
         return permissions
 
@@ -171,7 +171,8 @@ class KeycloakRemoteUser(object):
         :return:
         """
         for backend in auth.get_backends():
-            if not hasattr(backend, 'has_perm'):
+            if not hasattr(backend, 'has_perm') \
+                    or backend.__module__.startswith('django.contrib.auth'):
                 continue
             try:
                 if backend.has_perm(self, perm, obj):

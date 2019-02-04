@@ -2,6 +2,7 @@ from datetime import timedelta
 
 import logging
 
+from django.apps import apps as django_apps
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.contrib.auth import get_user_model
@@ -10,8 +11,6 @@ from django.utils import timezone
 from django.utils.module_loading import import_string
 from keycloak.exceptions import KeycloakClientError
 
-from django_keycloak.models import RemoteUserOpenIdConnectProfile, \
-    OpenIdConnectProfile
 from django_keycloak.services.exceptions import TokensExpired
 from django_keycloak.remote_user import KeycloakRemoteUser
 
@@ -21,19 +20,36 @@ import django_keycloak.services.realm
 logger = logging.getLogger(__name__)
 
 
+def get_openid_connect_profile_model():
+    """
+    Return the OpenIdConnectProfile model that is active in this project.
+    """
+    try:
+        return django_apps.get_model(settings.KEYCLOAK_OIDC_PROFILE_MODEL,
+                                     require_ready=False)
+    except ValueError:
+        raise ImproperlyConfigured(
+            "KEYCLOAK_OIDC_PROFILE_MODEL must be of the form "
+            "'app_label.model_name'")
+    except LookupError:
+        raise ImproperlyConfigured(
+            "KEYCLOAK_OIDC_PROFILE_MODEL refers to model '%s' that has not "
+            "been installed" % settings.KEYCLOAK_OIDC_PROFILE_MODEL)
+
+
 def get_remote_user_model():
     """
     Return the User model that is active in this project.
     """
-    if not hasattr(settings, 'AUTH_REMOTE_USER_MODEL'):
+    if not hasattr(settings, 'KEYCLOAK_REMOTE_USER_MODEL'):
         # By default return the standard KeycloakRemoteUser model
         return KeycloakRemoteUser
 
     try:
-        return import_string(settings.AUTH_REMOTE_USER_MODEL)
+        return import_string(settings.KEYCLOAK_REMOTE_USER_MODEL)
     except ImportError:
         raise ImproperlyConfigured(
-            "AUTH_REMOTE_USER_MODEL refers to non-existing class"
+            "KEYCLOAK_REMOTE_USER_MODEL refers to non-existing class"
         )
 
 
@@ -67,14 +83,19 @@ def update_or_create_user_and_oidc_profile(client, id_token_object):
     :return:
     """
 
-    if getattr(settings, 'AUTH_ENABLE_REMOTE_USER_MODEL', False):
-        oidc_profile, _ = RemoteUserOpenIdConnectProfile.objects.\
+    OpenIdConnectProfileModel = get_openid_connect_profile_model()
+
+    if OpenIdConnectProfileModel.is_remote:
+        oidc_profile, _ = OpenIdConnectProfileModel.objects.\
             update_or_create(
                 sub=id_token_object['sub'],
                 defaults={
                     'realm': client.realm
                 }
             )
+
+        UserModel = get_remote_user_model()
+        oidc_profile.user = UserModel(id_token_object)
 
         return oidc_profile
 
@@ -90,7 +111,7 @@ def update_or_create_user_and_oidc_profile(client, id_token_object):
             }
         )
 
-        oidc_profile, _ = OpenIdConnectProfile.objects.update_or_create(
+        oidc_profile, _ = OpenIdConnectProfileModel.objects.update_or_create(
             sub=id_token_object['sub'],
             defaults={
                 'realm': client.realm,
@@ -115,7 +136,7 @@ def get_remote_user_from_profile(oidc_profile):
     except KeycloakClientError:
         return None
 
-    # Get the user from the AUTH_REMOTE_USER_MODEL in the settings
+    # Get the user from the KEYCLOAK_REMOTE_USER_MODEL in the settings
     UserModel = get_remote_user_model()
 
     # Create the object of type UserModel from the constructor of it's class

@@ -5,6 +5,8 @@ import logging
 
 from django.shortcuts import resolve_url
 
+from django_keycloak.services.oidc_profile import get_remote_user_model
+
 try:
     from urllib.parse import urljoin  # noqa: F401
 except ImportError:
@@ -64,8 +66,6 @@ class LoginComplete(RedirectView):
 
     def get(self, *args, **kwargs):
         request = self.request
-        print('Login Complete')
-
 
         if 'error' in request.GET:
             return HttpResponseServerError(request.GET['error'])
@@ -84,18 +84,13 @@ class LoginComplete(RedirectView):
                             code=request.GET['code'],
                             redirect_uri=nonce.redirect_uri)
 
-        print('Authenticated user:', user)
-        if getattr(settings, 'AUTH_ENABLE_REMOTE_USER_MODEL', False):
-            print('Authenticated user:', user)
+        RemoteUserModel = get_remote_user_model()
+        if isinstance(user, RemoteUserModel):
             remote_user_login(request, user)
         else:
-            print('Gewone login!!!!???', user)
             login(request, user)
 
         nonce.delete()
-
-        import sys
-        sys.stdout.flush()
 
         return HttpResponseRedirect(nonce.next_path or '/')
 

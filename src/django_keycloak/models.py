@@ -161,15 +161,6 @@ class OpenIdConnectProfileAbstract(TokenModelAbstract):
     class Meta(object):
         abstract = True
 
-
-    @cached_property
-    def user(self):
-        import django_keycloak.services.oidc_profile
-        return django_keycloak.services.oidc_profile. \
-            get_remote_user_from_profile(
-                oidc_profile=self
-            )
-
     @property
     def jwt(self):
         """
@@ -188,11 +179,37 @@ class OpenIdConnectProfileAbstract(TokenModelAbstract):
 
 class RemoteUserOpenIdConnectProfile(OpenIdConnectProfileAbstract):
 
+    is_remote = True
+    _user = None
+
     class Meta(OpenIdConnectProfileAbstract.Meta):
         swappable = 'KEYCLOAK_OIDC_PROFILE_MODEL'
 
+    def get_user(self):
+        if self._user is None:
+            import django_keycloak.services.oidc_profile
+            self._user = django_keycloak.services.oidc_profile. \
+                get_remote_user_from_profile(
+                    oidc_profile=self
+                )
+        return self._user
+
+    def set_user(self, user):
+        import django_keycloak.services.oidc_profile
+        RemoteUserModel = django_keycloak.services.oidc_profile\
+            .get_remote_user_model()
+        if not isinstance(user, RemoteUserModel):
+            raise RuntimeError('Can\'t set a non-remote user to the {}'.format(
+                type(self)))
+
+        self._user = user
+
+    user = property(get_user, set_user)
+
 
 class OpenIdConnectProfile(OpenIdConnectProfileAbstract):
+
+    is_remote = False
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
                                 related_name='oidc_profile',

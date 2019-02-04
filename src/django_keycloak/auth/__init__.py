@@ -77,7 +77,6 @@ def remote_user_login(request, user, backend=None):
             'The user does not have an identifier or the identifier is empty.'
         )
 
-    print('remote_user_login', user)
     request.session[REMOTE_SESSION_KEY] = user.identifier
     request.session[BACKEND_SESSION_KEY] = backend
     request.session[HASH_SESSION_KEY] = session_auth_hash

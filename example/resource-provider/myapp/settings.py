@@ -120,7 +120,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_ENABLE_REMOTE_USER_MODEL = True
 KEYCLOAK_OIDC_PROFILE_MODEL = 'django_keycloak.RemoteUserOpenIdConnectProfile'
 
 CONTEXT_PROCESSORS = [
