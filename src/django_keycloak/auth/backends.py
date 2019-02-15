@@ -1,5 +1,6 @@
 import logging
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ImproperlyConfigured
 from django.utils import timezone
@@ -47,16 +48,29 @@ class KeycloakAuthorizationBase(object):
         rpt_decoded = django_keycloak.services.oidc_profile\
             .get_entitlement(oidc_profile=user_obj.oidc_profile)
 
-        permissions = []
-        for p in rpt_decoded['authorization'].get('permissions', []):
-            if 'scope' in p:
-                for scope in p['scope']:
-                    permissions.append('{}.{}'.format(p['resource_set_name'],
-                                                      scope))
-            else:
-                permissions.append(p['resource_set_name'])
+        if settings.KEYCLOAK_PERMISSIONS_METHOD == 'role':
+            return [
+                role for role in rpt_decoded['resource_access'].get(
+                    user_obj.oidc_profile.realm.client.client_id,
+                    {'roles': []}
+                )['roles']
+            ]
+        elif settings.KEYCLOAK_PERMISSIONS_METHOD == 'resource':
+            permissions = []
+            for p in rpt_decoded['authorization'].get('permissions', []):
+                if 'scope' in p:
+                    for scope in p['scope']:
+                        permissions.append('{}.{}'.format(p['resource_set_name'],
+                                                          scope))
+                else:
+                    permissions.append(p['resource_set_name'])
 
-        return permissions
+            return permissions
+        else:
+            raise ImproperlyConfigured(
+                'Unsupported permission method configured for '
+                'Keycloak: {}'.format(settings.KEYCLOAK_PERMISSIONS_METHOD)
+            )
 
     def has_perm(self, user_obj, perm, obj=None):
         if '.' in perm:
