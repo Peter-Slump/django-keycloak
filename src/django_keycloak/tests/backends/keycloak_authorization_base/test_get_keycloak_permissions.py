@@ -1,10 +1,11 @@
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from django_keycloak.factories import OpenIdConnectProfileFactory
 from django_keycloak.tests.mixins import MockTestCaseMixin
 from django_keycloak.auth.backends import KeycloakAuthorizationBase
 
 
+@override_settings(KEYCLOAK_PERMISSIONS_METHOD='resource')
 class BackendsKeycloakAuthorizationBaseGetKeycloakPermissionsTestCase(
         MockTestCaseMixin, TestCase):
 
@@ -42,7 +43,7 @@ class BackendsKeycloakAuthorizationBaseGetKeycloakPermissionsTestCase(
         permissions = self.backend.get_keycloak_permissions(
             user_obj=self.profile.user)
 
-        self.assertEqual(len(permissions), 2)
-        self.assertEqual(permissions[0]['resource_set_name'], 'Resource')
-        self.assertEqual(permissions[0]['scopes'], ['Read', 'Update'])
-        self.assertEqual(permissions[1]['resource_set_name'], 'Resource2')
+        self.assertListEqual(
+            ['Resource.Read', 'Resource.Update', 'Resource2'],
+            permissions
+        )

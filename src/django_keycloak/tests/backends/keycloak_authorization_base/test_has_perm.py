@@ -1,33 +1,37 @@
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from django_keycloak.factories import OpenIdConnectProfileFactory
 from django_keycloak.tests.mixins import MockTestCaseMixin
 from django_keycloak.auth.backends import KeycloakAuthorizationBase
 
 
+@override_settings(KEYCLOAK_PERMISSIONS_METHOD='resource')
 class BackendsKeycloakAuthorizationBaseHasPermTestCase(
         MockTestCaseMixin, TestCase):
 
     def setUp(self):
         self.backend = KeycloakAuthorizationBase()
 
-        self.profile = OpenIdConnectProfileFactory()
+        self.profile = OpenIdConnectProfileFactory(user__is_active=True)
 
         self.setup_mock(
-            'django_keycloak.auth.backends.KeycloakAuthorizationBase.'
-            'get_all_permissions',
-            return_value=[
-                {
-                    'resource_set_name': 'Resource',
-                    'scopes': [
-                        'Read',
-                        'Update'
+            'django_keycloak.services.oidc_profile.get_entitlement',
+            return_value={
+                'authorization': {
+                    'permissions': [
+                        {
+                            'resource_set_name': 'Resource',
+                            'scopes': [
+                                'Read',
+                                'Update'
+                            ]
+                        },
+                        {
+                            'resource_set_name': 'Resource2'
+                        }
                     ]
-                },
-                {
-                    'resource_set_name': 'Resource2'
                 }
-            ]
+            }
         )
 
     def test_resource_scope_should_have_permission(self):

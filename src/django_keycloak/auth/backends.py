@@ -58,10 +58,10 @@ class KeycloakAuthorizationBase(object):
         elif settings.KEYCLOAK_PERMISSIONS_METHOD == 'resource':
             permissions = []
             for p in rpt_decoded['authorization'].get('permissions', []):
-                if 'scope' in p:
-                    for scope in p['scope']:
-                        permissions.append('{}.{}'.format(p['resource_set_name'],
-                                                          scope))
+                if 'scopes' in p:
+                    for scope in p['scopes']:
+                        permissions.append('{}.{}'.format(
+                            p['resource_set_name'], scope))
                 else:
                     permissions.append(p['resource_set_name'])
 
@@ -73,26 +73,13 @@ class KeycloakAuthorizationBase(object):
             )
 
     def has_perm(self, user_obj, perm, obj=None):
-        if '.' in perm:
-            # Permission is formatted as <resource>.<scope>
-            # Split the permission into separate resource and scope
-            resource, scope = perm.split('.', 1)
-        else:
-            # Permission is only a resource
-            # Can't split
-            resource = perm
 
         if not user_obj.is_active:
             return False
 
         granted_perms = self.get_all_permissions(user_obj, obj)
-
-        if perm in granted_perms:
-            return True
-        elif resource in granted_perms:
-            return True
-
-        return False
+        print('Granted', granted_perms)
+        return perm in granted_perms
 
 
 class KeycloakAuthorizationCodeBackend(KeycloakAuthorizationBase):
