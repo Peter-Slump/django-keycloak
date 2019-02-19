@@ -60,8 +60,8 @@ class KeycloakAuthorizationBase(object):
             for p in rpt_decoded['authorization'].get('permissions', []):
                 if 'scopes' in p:
                     for scope in p['scopes']:
-                        permissions.append('{}.{}'.format(
-                            p['resource_set_name'], scope))
+                        permissions.append('{}_{}'.format(
+                            scope, p['resource_set_name']))
                 else:
                     permissions.append(p['resource_set_name'])
 
@@ -78,7 +78,6 @@ class KeycloakAuthorizationBase(object):
             return False
 
         granted_perms = self.get_all_permissions(user_obj, obj)
-        print('Granted', granted_perms)
         return perm in granted_perms
 
 

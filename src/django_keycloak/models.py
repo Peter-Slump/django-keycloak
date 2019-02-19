@@ -82,10 +82,11 @@ class Client(models.Model):
     client_id = models.CharField(max_length=255)
     secret = models.CharField(max_length=255)
 
-    service_account = models.OneToOneField(settings.AUTH_USER_MODEL,
-                                           related_name='keycloak_client',
-                                           on_delete=models.CASCADE,
-                                           null=True)
+    service_account_profile = models.OneToOneField(
+        settings.KEYCLOAK_OIDC_PROFILE_MODEL,
+        on_delete=models.CASCADE,
+        null=True
+    )
 
     @cached_property
     def admin_api_client(self):
@@ -111,6 +112,14 @@ class Client(models.Model):
         import django_keycloak.services.client
         return django_keycloak.services.client.get_authz_api_client(
             client=self)
+
+    @cached_property
+    def uma1_api_client(self):
+        """
+        :rtype: keycloak.uma1.KeycloakUMA1
+        """
+        import django_keycloak.services.client
+        return django_keycloak.services.client.get_uma1_client(client=self)
 
     def __str__(self):
         return self.client_id

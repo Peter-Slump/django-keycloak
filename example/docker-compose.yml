@@ -66,6 +66,7 @@ services:
     volumes:
       - ./resource-provider:/usr/src/app
       - ./../:/usr/src/django-keycloak
+      - ./../../python-keycloak-client:/usr/src/python-keycloak-client
       - ./nginx/certs/ca.pem:/usr/src/ca.pem
     networks:
       default:

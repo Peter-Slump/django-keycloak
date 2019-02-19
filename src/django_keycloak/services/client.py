@@ -51,6 +51,14 @@ def get_openid_client(client):
     return openid
 
 
+def get_uma1_client(client):
+    """
+    :type client: django_keycloak.models.Client
+    :rtype: keycloak.uma1.KeycloakUMA1
+    """
+    return client.realm.realm_api_client.uma1
+
+
 def get_admin_client(client):
     """
     Get the Keycloak admin client configured for given realm.
@@ -70,8 +78,8 @@ def get_service_account_profile(client):
     :rtype: django_keycloak.models.OpenIdConnectProfile
     """
 
-    if client.service_account:
-        return client.service_account.oidc_profile
+    if client.service_account_profile:
+        return client.service_account_profile
 
     token_response, initiate_time = get_new_access_token(client=client)
 
@@ -80,8 +88,8 @@ def get_service_account_profile(client):
         token_response=token_response,
         initiate_time=initiate_time)
 
-    client.service_account = oidc_profile.user
-    client.save(update_fields=['service_account'])
+    client.service_account_profile = oidc_profile
+    client.save(update_fields=['service_account_profile'])
 
     return oidc_profile
 

@@ -1,22 +1,16 @@
+from django.conf import settings
 from django.contrib import admin, messages
+from keycloak.exceptions import KeycloakClientError
 from requests.exceptions import HTTPError
 
 from django_keycloak.models import (
-    Realm,
-    Server,
     Client,
-    OpenIdConnectProfile, RemoteClient)
+    OpenIdConnectProfile,
+    RemoteClient
+)
 import django_keycloak.services.permissions
 import django_keycloak.services.realm
-
-
-class ServerAdmin(admin.ModelAdmin):
-
-    fieldsets = (
-        ('Location', {
-            'fields': ('url', 'internal_url')
-        }),
-    )
+import django_keycloak.services.uma
 
 
 def refresh_open_id_connect_well_known(modeladmin, request, queryset):
@@ -91,6 +85,35 @@ def synchronize_permissions(modeladmin, request, queryset):
 synchronize_permissions.short_description = 'Synchronize permissions'
 
 
+def synchronize_resources(modeladmin, request, queryset):
+    for realm in queryset:
+        try:
+            django_keycloak.services.uma.synchronize_client(
+                client=realm.client)
+        except KeycloakClientError as e:
+            if e.original_exc.response.status_code == 400:
+                modeladmin.message_user(
+                    request=request,
+                    message='Forbidden for {}. Is "Remote Resource Management" '
+                            'enabled for the related client?'.format(
+                                realm.name
+                            ),
+                    level=messages.ERROR
+                )
+                return
+            else:
+                raise
+    modeladmin.message_user(
+        request=request,
+        message='Resources synchronized',
+        level=messages.SUCCESS
+    )
+
+
+synchronize_resources.short_description = 'Synchronize models as Keycloak ' \
+                                          'resources'
+
+
 class ClientAdmin(admin.TabularInline):
 
     model = Client
@@ -115,8 +138,8 @@ class RealmAdmin(admin.ModelAdmin):
         refresh_open_id_connect_well_known,
         refresh_certs,
         clear_client_tokens,
-        synchronize_permissions
-
+        synchronize_permissions,
+        synchronize_resources
     ]
 
     fieldsets = (
@@ -130,7 +153,3 @@ class RealmAdmin(admin.ModelAdmin):
     )
 
     readonly_fields = ('_well_known_oidc',)
-
-
-admin.site.register(Server, ServerAdmin)
-admin.site.register(Realm, RealmAdmin)

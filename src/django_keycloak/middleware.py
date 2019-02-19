@@ -2,6 +2,7 @@ import re
 
 from django.conf import settings
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import AnonymousUser
 from django.utils.deprecation import MiddlewareMixin
 from django.utils.functional import SimpleLazyObject
 
@@ -16,7 +17,12 @@ def get_realm(request):
     return request._cached_realm
 
 
-def get_user(request):
+def get_user(request, origin_user):
+    # Check for the user as set by
+    # django.contrib.auth.middleware.AuthenticationMiddleware
+    if not isinstance(origin_user, AnonymousUser):
+        return origin_user
+
     if not hasattr(request, '_cached_user'):
         request._cached_user = get_remote_user(request)
     return request._cached_user
@@ -108,4 +114,9 @@ class RemoteUserAuthenticationMiddleware(MiddlewareMixin):
         Adds user to the request when authorized user is found in the session
         :param django.http.request.HttpRequest request: django request
         """
-        request.user = SimpleLazyObject(lambda: get_user(request))
+        origin_user = getattr(request, 'user', None)
+
+        request.user = SimpleLazyObject(lambda: get_user(
+            request,
+            origin_user=origin_user
+        ))
