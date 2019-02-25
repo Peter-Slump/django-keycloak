@@ -40,7 +40,7 @@ class BackendsKeycloakAuthorizationBaseHasPermTestCase(
         Expected: Permission granted.
         """
         permission = self.backend.has_perm(
-            user_obj=self.profile.user, perm='Resource.Read')
+            user_obj=self.profile.user, perm='Read_Resource')
 
         self.assertTrue(permission)
 
@@ -62,7 +62,7 @@ class BackendsKeycloakAuthorizationBaseHasPermTestCase(
         Expected: Permission denied.
         """
         permission = self.backend.has_perm(
-            user_obj=self.profile.user, perm='Resource.Create')
+            user_obj=self.profile.user, perm='Create_Resource')
 
         self.assertFalse(permission)
 
@@ -73,7 +73,7 @@ class BackendsKeycloakAuthorizationBaseHasPermTestCase(
         Expected: Permission denied.
         """
         permission = self.backend.has_perm(
-            user_obj=self.profile.user, perm='OtherResource.OtherScope')
+            user_obj=self.profile.user, perm='OtherScope_OtherResource')
 
         self.assertFalse(permission)
 

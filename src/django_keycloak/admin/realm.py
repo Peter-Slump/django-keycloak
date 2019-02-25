@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib import admin, messages
 from keycloak.exceptions import KeycloakClientError
 from requests.exceptions import HTTPError
@@ -94,8 +93,9 @@ def synchronize_resources(modeladmin, request, queryset):
             if e.original_exc.response.status_code == 400:
                 modeladmin.message_user(
                     request=request,
-                    message='Forbidden for {}. Is "Remote Resource Management" '
-                            'enabled for the related client?'.format(
+                    message='Forbidden for {}. Is "Remote Resource '
+                            'Management"  enabled for the related client?'
+                            .format(
                                 realm.name
                             ),
                     level=messages.ERROR

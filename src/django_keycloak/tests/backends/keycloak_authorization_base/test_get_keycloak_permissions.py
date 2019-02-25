@@ -44,6 +44,6 @@ class BackendsKeycloakAuthorizationBaseGetKeycloakPermissionsTestCase(
             user_obj=self.profile.user)
 
         self.assertListEqual(
-            ['Resource.Read', 'Resource.Update', 'Resource2'],
+            ['Read_Resource', 'Update_Resource', 'Resource2'],
             permissions
         )

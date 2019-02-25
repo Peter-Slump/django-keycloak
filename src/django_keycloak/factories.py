@@ -58,7 +58,10 @@ class ClientFactory(factory.DjangoModelFactory):
         model = Client
 
     realm = factory.SubFactory(RealmFactory, client=None)
-    service_account = factory.SubFactory(UserFactory)
+    service_account_profile = factory.SubFactory(
+        OpenIdConnectProfileFactory,
+        realm=factory.SelfAttribute('..realm')
+    )
 
     client_id = factory.Faker('slug')
     secret = factory.Faker('uuid4')

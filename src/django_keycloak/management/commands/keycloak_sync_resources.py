@@ -31,4 +31,3 @@ class Command(BaseCommand):
         else:
             for client in Client.objects.all():
                 django_keycloak.services.uma.synchronize_client(client=client)
-

@@ -1,5 +1,5 @@
-# Configure the model which need to be used to store the Open ID connect profile
-# There are two choices:
+# Configure the model which need to be used to store the Open ID connect
+# profile. There are two choices:
 # - django_keycloak.OpenIdConnectProfile (Default) a local User object get
 #   created for the logged in identity.
 # - django_keycloak.RemoteUserOpenIdConnectProfile with this model there will
