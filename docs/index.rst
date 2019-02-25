@@ -12,6 +12,9 @@ Welcome to Django Keycloak's documentation!
    scenario/initial_setup
    scenario/migrating
    scenario/example_project
+   scenario/permissions_by_roles
+   scenario/permissions_by_resources_and_scopes
+   scenario/multi_tenancy
 
 Django Keycloak adds Keycloak support to your Django project. It's build on top
 of `Django's authentication system <https://docs.djangoproject.com/en/1.11/ref/contrib/auth/>`_.
@@ -26,6 +29,10 @@ Features
 - Choose if you want to create a local User model for every logged in identity or not.
 
 Read :ref:`example_project` to quickly test this project.
+
+.. note:: The documentation and the example project are all based on
+    Keycloak version 3.4 since that is the latest version which is commercially
+    supported by Red Hat (SSO).
 
 Installation
 ============

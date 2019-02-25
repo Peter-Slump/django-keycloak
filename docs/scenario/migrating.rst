@@ -2,11 +2,15 @@
 Migrating from Django Auth to Keycloak
 ======================================
 
+There are some tools available which can help by migrating a running project to
+Keycloak.
+
 --------
 Add user
 --------
 
-A management command is available to add a local user to Keycloak.
+A management command is available to create a Keycloak user based on a local
+one.
 
 .. code:: bash
 
@@ -25,3 +29,7 @@ A management command is available to add a local user to Keycloak.
         PASSWORD_HASHERS = [
             'django_keycloak.hashers.PBKDF2SHA512PasswordHasher',
         ]
+
+
+.. _synchronize_permissions:
+

@@ -20,8 +20,8 @@ Realm configuration
 ===================
 
 After you have created a
-`REALM <http://www.keycloak.org/docs/latest/server_admin/index.html#_create-realm>`_
-and `Client <http://www.keycloak.org/docs/latest/server_admin/index.html#_clients>`_
+`REALM <http://www.keycloak.org/docs/3.4/server_admin/index.html#_create-realm>`_
+and `Client <http://www.keycloak.org/docs/3.4/server_admin/index.html#_clients>`_
 in Keycloak you can add these in the Django admin.
 
 .. note:: Django-Keycloak supports multiple realms. However when you configure
@@ -48,10 +48,12 @@ Refresh OpenID Connect .well-known
 
 In the Django Admin you can apply the action "Refresh OpenID Connect
 .well-known" for a realm. This retrieves the
-`.well-known <http://www.keycloak.org/docs/latest/securing_apps/index.html#endpoints>`_
+`.well-known <http://www.keycloak.org/docs/3.4/securing_apps/index.html#endpoints>`_
 content for the OpenID Connect functionality and caches this in the database. In
 this way it's not required to fetch this file before each request regarding
 OpenID Connect to the Keycloak server.
+
+.. image:: /refresh_well_known.png
 
 .. _refresh_certificates:
 
@@ -62,6 +64,8 @@ Refresh Certificates
 This refreshes the cached certificates from the Keycloak server. These
 certificates are used for valiation of the JWT's.
 
+.. image:: /refresh_certificates.png
+
 -------------------
 Clear client tokens
 -------------------
@@ -70,15 +74,4 @@ While debugging client service account permissions it's sometimes required to
 refresh te session in order to fetch the new permissions. This can be done with
 this action in the Django admin.
 
-.. _synchronize_permissions:
-
------------------------
-Synchronize permissions
------------------------
-
-This Django Admin action which can be triggered for a realm synchronizes all
-available permission to Keycloak. In keycloak the permissions will get
-registered as roles. These roles can be added to a user.
-
-For this feature the service account should have the
-realm-management/manage-clients role assigned.
+.. image:: /clear_client_tokens.png
