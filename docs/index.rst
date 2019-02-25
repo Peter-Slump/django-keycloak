@@ -7,11 +7,11 @@ Welcome to Django Keycloak's documentation!
    :caption: Scenario's
    :maxdepth: 2
 
+   scenario/example_project
    scenario/local_user_setup
    scenario/remote_user_setup
    scenario/initial_setup
    scenario/migrating
-   scenario/example_project
    scenario/permissions_by_roles
    scenario/permissions_by_resources_and_scopes
    scenario/multi_tenancy

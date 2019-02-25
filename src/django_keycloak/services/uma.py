@@ -41,12 +41,12 @@ def synchronize_resources(client, app_config):
         scopes = _get_all_permissions(klass._meta)
 
         try:
-            response = uma1_client.resource_set_create(
+            uma1_client.resource_set_create(
                 token=access_token,
-                name=klass._meta.verbose_name_raw,
+                name=klass._meta.label_lower,
                 type='urn:{client}:resources:{model}'.format(
                     client=slugify(client.client_id),
-                    model=klass._meta.model_name
+                    model=klass._meta.label_lower
                 ),
                 scopes=scopes
             )

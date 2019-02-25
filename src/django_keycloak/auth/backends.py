@@ -60,8 +60,18 @@ class KeycloakAuthorizationBase(object):
             for p in rpt_decoded['authorization'].get('permissions', []):
                 if 'scopes' in p:
                     for scope in p['scopes']:
-                        permissions.append('{}_{}'.format(
-                            scope, p['resource_set_name']))
+                        if '.' in p['resource_set_name']:
+                            app, model = p['resource_set_name'].split('.', 1)
+                            permissions.append('{app}.{scope}_{model}'.format(
+                                app=app,
+                                scope=scope,
+                                model=model
+                            ))
+                        else:
+                            permissions.append('{scope}_{resource}'.format(
+                                scope=scope,
+                                resource=p['resource_set_name']
+                            ))
                 else:
                     permissions.append(p['resource_set_name'])
 

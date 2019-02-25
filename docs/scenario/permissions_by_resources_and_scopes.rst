@@ -56,4 +56,4 @@ From here you are able to configure your `policies` and `permissions` and assign
 them to `users` of `groups` using `roles` in Keycloak. Once assigned you get
 them back as permissions in Django where the policies are combined with the
 resources just like you are used to in the default Django permission system
-i.e. `create_foo` or `change_bar`.
+i.e. `foo.add_bar` or `foo.change_bar`.

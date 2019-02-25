@@ -120,7 +120,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-KEYCLOAK_OIDC_PROFILE_MODEL = 'django_keycloak.RemoteUserOpenIdConnectProfile'
+# KEYCLOAK_OIDC_PROFILE_MODEL = 'django_keycloak.RemoteUserOpenIdConnectProfile'
+# KEYCLOAK_PERMISSIONS_METHOD = 'resource'
 
 CONTEXT_PROCESSORS = [
 
@@ -161,5 +162,3 @@ LOGGING = {
         },
     }
 }
-
-KEYCLOAK_SKIP_SSL_VERIFY = True
