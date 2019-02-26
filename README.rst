@@ -81,6 +81,7 @@ Release Notes
   model. (thanks to `bossan <https://github.com/bossan>`_)
 * Addes support for permissions using resources and scopes.
   (thanks to `bossan <https://github.com/bossan>`_)
+* Added example project.
 * Updated documentation.
 
 **v0.1.0**
