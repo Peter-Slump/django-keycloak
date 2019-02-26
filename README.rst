@@ -73,7 +73,15 @@ Release Notes
 
 **unreleased**
 
-* Correctly extract email field name on UserModel (thanks to @swist)
+* Added support for remote user. Handling identities without registering a User
+  model. (thanks to `bossan <https://github.com/bossan>`_)
+* Addes support for permissions using resources and scopes.
+  (thanks to `bossan <https://github.com/bossan>`_)
+* Updated documentation.
+
+**v0.1.0**
+
+* Correctly extract email field name on UserModel (thanks to `swist <https://github.com/swist>`_)
 * Add support for Oauth2 Token Exchange to exchange tokens with remote clients.
   Handy when using multiple applications with different clients which have to
   communicate with each other.
