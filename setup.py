@@ -19,6 +19,7 @@ setup(
     extras_require={
         'dev': [
             'bumpversion==0.5.3',
+            'twine',
         ],
         'doc': [
             'Sphinx==1.4.4',
