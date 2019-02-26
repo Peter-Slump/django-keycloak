@@ -72,6 +72,7 @@ Release Notes
 =============
 
 **unreleased**
+**v0.1.1**
 
 * Added support for remote user. Handling identities without registering a User
   model. (thanks to `bossan <https://github.com/bossan>`_)
