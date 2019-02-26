@@ -30,7 +30,7 @@ setup(
         'python-keycloak-client',
     ],
     install_requires=[
-        'python-keycloak-client',
+        'python-keycloak-client>=0.2.2',
         'Django>=1.11',
     ],
     tests_require=[
