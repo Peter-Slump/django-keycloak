@@ -118,7 +118,7 @@ class ClientAdmin(admin.TabularInline):
 
     model = Client
 
-    fields = ('client_id', 'secret')
+    fields = ('client_id', 'secret', 'audience', )
 
 
 class RemoteClientAdmin(admin.TabularInline):
