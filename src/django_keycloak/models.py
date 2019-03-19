@@ -81,6 +81,7 @@ class Client(models.Model):
 
     client_id = models.CharField(max_length=255)
     secret = models.CharField(max_length=255)
+    audience = models.CharField(max_length=255, blank=True)
 
     service_account_profile = models.OneToOneField(
         settings.KEYCLOAK_OIDC_PROFILE_MODEL,
@@ -181,6 +182,7 @@ class OpenIdConnectProfileAbstract(TokenModelAbstract):
         return client.openid_api_client.decode_token(
             token=self.access_token,
             key=client.realm.certs,
+            audience=client.audience if client.audience else None,
             algorithms=client.openid_api_client.well_known[
                 'id_token_signing_alg_values_supported']
         )
