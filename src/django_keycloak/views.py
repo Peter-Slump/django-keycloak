@@ -46,7 +46,7 @@ class Login(RedirectView):
         authorization_url = self.request.realm.client.openid_api_client\
             .authorization_url(
                 redirect_uri=nonce.redirect_uri,
-                scope='openid given_name family_name email',
+                scope='openid given_name family_name email {}'.format(self.request.realm.client.client_id),
                 state=str(nonce.state)
             )
 
