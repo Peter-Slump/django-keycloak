@@ -295,11 +295,13 @@ def get_entitlement(oidc_profile):
     """
     access_token = get_active_access_token(oidc_profile=oidc_profile)
 
-    rpt = oidc_profile.realm.client.authz_api_client.entitlement(
-        token=access_token)
+    rpt = oidc_profile.realm.client.openid_api_client.permissions(
+        token=access_token,
+        audience=oidc_profile.realm.client.client_id
+    )
 
     rpt_decoded = oidc_profile.realm.client.openid_api_client.decode_token(
-        token=rpt['rpt'],
+        token=rpt['access_token'],
         key=oidc_profile.realm.certs,
         options={
             'verify_signature': True,
