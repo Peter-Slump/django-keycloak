@@ -22,7 +22,7 @@ services:
       - resource-provider-api
 
   keycloak:
-    image: jboss/keycloak:4.8.3.Final         # Pinned to 4.8.3 because this is currently the latest version which has commercial support from Red Hat: https://www.keycloak.org/support.html
+    image: jboss/keycloak:4.8.3.Final         # Pinned to 4.8.3 because this is currently the latest version which has commercial support from Red Hat
     command: [
       "-b", "0.0.0.0",
       "-Dkeycloak.migration.action=import",   # Replace with 'export' in order to export everything
