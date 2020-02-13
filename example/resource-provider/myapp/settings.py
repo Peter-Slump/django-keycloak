@@ -162,3 +162,5 @@ LOGGING = {
         },
     }
 }
+
+KEYCLOAK_VERSION = 4

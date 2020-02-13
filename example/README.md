@@ -9,10 +9,10 @@ It consists out of three applications:
  
 When running the application everything is pre-configured and ready to use.
 
-Keycloak version 3.4.3-Final is used since that is the latest version which is 
+Keycloak version 4.8.3-Final is used since that is the latest version which is 
 commercially supported by Red Hat (SSO).
 
-You can find the docs for this version here: https://www.keycloak.org/archive/documentation-3.4.html
+You can find the docs for this version here: https://www.keycloak.org/archive/documentation-4.8.html
 
 You can find the following features in the project:
 

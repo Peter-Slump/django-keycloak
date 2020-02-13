@@ -31,7 +31,7 @@ Features
 Read :ref:`example_project` to quickly test this project.
 
 .. note:: The documentation and the example project are all based on
-    Keycloak version 3.4 since that is the latest version which is commercially
+    Keycloak version 4.8 since that is the latest version which is commercially
     supported by Red Hat (SSO).
 
 Installation

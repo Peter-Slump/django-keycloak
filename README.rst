@@ -75,6 +75,8 @@ Release Notes
 
 **v0.1.2-dev**
 
+* Add support for Keycloak 4.* using setting: `KEYCLOAK_VERSION = 4`
+
 **v0.1.1**
 
 * Added support for remote user. Handling identities without registering a User

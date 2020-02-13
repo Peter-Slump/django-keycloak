@@ -22,7 +22,7 @@ services:
       - resource-provider-api
 
   keycloak:
-    image: jboss/keycloak:3.4.3.Final         # Pinned to 3.4.3 because this is currently the latest version which has commercial support from Red Hat: https://www.keycloak.org/support.html
+    image: jboss/keycloak:4.8.3.Final         # Pinned to 4.8.3 because this is currently the latest version which has commercial support from Red Hat
     command: [
       "-b", "0.0.0.0",
       "-Dkeycloak.migration.action=import",   # Replace with 'export' in order to export everything
@@ -39,8 +39,8 @@ services:
       - POSTGRES_PORT_5432_TCP_ADDR=postgres
       - POSTGRES_PORT_5432_TCP_PORT=5432
       - PROXY_ADDRESS_FORWARDING=true
-      - KEYCLOAK_LOGLEVEL=DEBUG
-#      - JAVA_TOOL_OPTIONS=-Dkeycloak.profile.feature.admin_fine_grained_authz=enabled -Dkeycloak.profile.feature.token_exchange=enabled  # Required to enable Token exchange feature in newer versions of Keycloak
+      - KEYCLOAK_LOGLEVEL=INFO
+      - JAVA_TOOL_OPTIONS=-Dkeycloak.profile.feature.admin_fine_grained_authz=enabled -Dkeycloak.profile.feature.token_exchange=enabled  # Required to enable Token exchange feature in newer versions of Keycloak
     volumes:
       - ./keycloak/export:/opt/jboss/keycloak/standalone/configuration/export
     networks:

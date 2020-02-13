@@ -1,8 +1,27 @@
 {
   "realm" : "example",
   "users" : [ {
-    "id" : "a39d3fb5-6e11-47c5-a48e-50e254804f98",
-    "createdTimestamp" : 1548797565484,
+    "id" : "b995de6f-8c09-497c-b669-8f2039518808",
+    "createdTimestamp" : 1581628634300,
+    "username" : "service-account-realm-management",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "email" : "service-account-realm-management@placeholder.org",
+    "serviceAccountClientId" : "realm-management",
+    "credentials" : [ ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "offline_access", "uma_authorization" ],
+    "clientRoles" : {
+      "realm-management" : [ "uma_protection" ],
+      "account" : [ "manage-account", "view-profile" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "0fdadc95-1292-4fb3-b485-ca4a5f0ca33e",
+    "createdTimestamp" : 1581628634363,
     "username" : "service-account-resource-provider",
     "enabled" : true,
     "totp" : false,
@@ -15,14 +34,13 @@
     "realmRoles" : [ "offline_access", "uma_authorization" ],
     "clientRoles" : {
       "resource-provider" : [ "uma_protection" ],
-      "realm-management" : [ "manage-clients" ],
       "account" : [ "manage-account", "view-profile" ]
     },
     "notBefore" : 0,
     "groups" : [ ]
   }, {
-    "id" : "7ef9e62d-6674-4ca2-9d8c-593ee3519c33",
-    "createdTimestamp" : 1548797581171,
+    "id" : "91436631-d5b1-46b3-9a04-16ec2b843bad",
+    "createdTimestamp" : 1581628634420,
     "username" : "service-account-resource-provider-api",
     "enabled" : true,
     "totp" : false,

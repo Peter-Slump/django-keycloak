@@ -20,8 +20,8 @@ Realm configuration
 ===================
 
 After you have created a
-`REALM <http://www.keycloak.org/docs/3.4/server_admin/index.html#_create-realm>`_
-and `Client <http://www.keycloak.org/docs/3.4/server_admin/index.html#_clients>`_
+`REALM <http://www.keycloak.org/docs/4.8/server_admin/index.html#_create-realm>`_
+and `Client <http://www.keycloak.org/docs/4.8/server_admin/index.html#_clients>`_
 in Keycloak you can add these in the Django admin.
 
 .. note:: Django-Keycloak supports multiple realms. However when you configure
@@ -48,7 +48,7 @@ Refresh OpenID Connect .well-known
 
 In the Django Admin you can apply the action "Refresh OpenID Connect
 .well-known" for a realm. This retrieves the
-`.well-known <http://www.keycloak.org/docs/3.4/securing_apps/index.html#endpoints>`_
+`.well-known <http://www.keycloak.org/docs/4.8/securing_apps/index.html#endpoints>`_
 content for the OpenID Connect functionality and caches this in the database. In
 this way it's not required to fetch this file before each request regarding
 OpenID Connect to the Keycloak server.
