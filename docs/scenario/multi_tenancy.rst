@@ -17,7 +17,7 @@ first found Realm model to the request object.
         'django_keycloak.middleware.BaseKeycloakMiddleware',
     ]
 
-If you want to support multiple reams you have to create your own middleware.
+If you want to support multiple realms you have to create your own middleware.
 There are several methods to determine the currently active realm. You can think
 of realm determination by:
 
