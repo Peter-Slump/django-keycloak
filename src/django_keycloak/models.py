@@ -19,9 +19,9 @@ class Server(models.Model):
         max_length=255,
         blank=True,
         null=True,
-        help_text='URL on internal netwerk calls. For example when used with '
+        help_text='URL for internal network calls. For example, when used with '
                   'Docker Compose. Only supply when internal calls should go '
-                  'to a different url as the end-user will communicate with.'
+                  'to a different url than the end-user will communicate with.'
     )
 
     def __str__(self):
