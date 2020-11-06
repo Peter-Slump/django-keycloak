@@ -10,3 +10,11 @@ KEYCLOAK_OIDC_PROFILE_MODEL = 'django_keycloak.OpenIdConnectProfile'
 # Profile
 KEYCLOAK_REMOTE_USER_MODEL = 'django_keycloak.remote_user.KeycloakRemoteUser'
 KEYCLOAK_PERMISSIONS_METHOD = 'role'  # 'role' of 'resource'
+
+
+KEYCLOAK_ALWAYS_UPDATE_USER = False
+KEYCLOAK_USERNAME_ATTR = 'sub'
+KEYCLOAK_USER_ATTR_MAP = {
+    'first_name': 'given_name',
+    'last_name': 'family_name',
+}

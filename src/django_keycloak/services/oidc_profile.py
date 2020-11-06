@@ -16,6 +16,7 @@ from django_keycloak.remote_user import KeycloakRemoteUser
 
 
 import django_keycloak.services.realm
+from django_keycloak.signals import keycloak_populate_user
 
 logger = logging.getLogger(__name__)
 
@@ -75,9 +76,40 @@ def get_or_create_from_id_token(client, id_token):
         client=client, id_token_object=id_token_object)
 
 
-def update_or_create_user_and_oidc_profile(client, id_token_object):
+def get_or_build_user(id_token_object):
+    UserModel = get_user_model()
+
+    built = False
+    lookup = {UserModel.USERNAME_FIELD: id_token_object[settings.KEYCLOAK_USERNAME_ATTR]}
+
+    try:
+        user = UserModel.objects.get(**lookup)
+    except UserModel.DoesNotExist:
+        user = UserModel(**lookup)
+        built = True
+
+    return user, built
+
+
+def _populate_user_from_attributes(user, id_token_object):
+    email_field_name = get_user_model().get_email_field_name()
+
+    if email_field_name not in settings.KEYCLOAK_USER_ATTR_MAP:
+        settings.KEYCLOAK_USER_ATTR_MAP.update(**{email_field_name: 'email'})
+
+    for field, attr in settings.KEYCLOAK_USER_ATTR_MAP.items():
+        try:
+            value = id_token_object[attr]
+        except (TypeError, LookupError):
+            logger.warning('Does not exists value for attribute {}'.format(attr))
+        else:
+            setattr(user, field, value)
+
+
+def update_or_create_user_and_oidc_profile(client, id_token_object, force_populate=False):
     """
 
+    :param force_populate: boolean
     :param client:
     :param id_token_object:
     :return:
@@ -100,16 +132,24 @@ def update_or_create_user_and_oidc_profile(client, id_token_object):
         return oidc_profile
 
     with transaction.atomic():
-        UserModel = get_user_model()
-        email_field_name = UserModel.get_email_field_name()
-        user, _ = UserModel.objects.update_or_create(
-            username=id_token_object['sub'],
-            defaults={
-                email_field_name: id_token_object.get('email', ''),
-                'first_name': id_token_object.get('given_name', ''),
-                'last_name': id_token_object.get('family_name', '')
-            }
-        )
+        save_user = False
+        user, built = get_or_build_user(id_token_object)
+
+        should_populate = force_populate or settings.KEYCLOAK_ALWAYS_UPDATE_USER or built
+
+        if should_populate:
+            logger.info('Populating Django user {}'.format(user))
+            _populate_user_from_attributes(user, id_token_object)
+            save_user = True
+
+            # Give the client a chance to finish populating the user just before saving.
+            keycloak_populate_user.send(
+                type('KeycloakSignal', (object, ), {}),
+                user=user
+            )
+
+        if save_user or built:
+            user.save()
 
         oidc_profile, _ = OpenIdConnectProfileModel.objects.update_or_create(
             sub=id_token_object['sub'],
