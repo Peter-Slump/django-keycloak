@@ -28,7 +28,7 @@ class KeycloakAuthorizationBase(object):
         except UserModel.DoesNotExist:
             return None
 
-        if user.oidc_profile.refresh_expires_before > timezone.now():
+        if user.oidc_profile.refresh_expires_before and user.oidc_profile.refresh_expires_before > timezone.now():
             return user
 
         return None
@@ -50,7 +50,7 @@ class KeycloakAuthorizationBase(object):
 
         if settings.KEYCLOAK_PERMISSIONS_METHOD == 'role':
             return [
-                role for role in rpt_decoded['resource_access'].get(
+                role for role in rpt_decoded.get('resource_access', {}).get(
                     user_obj.oidc_profile.realm.client.client_id,
                     {'roles': []}
                 )['roles']
