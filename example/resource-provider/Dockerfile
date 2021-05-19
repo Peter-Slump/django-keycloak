@@ -1,7 +1,7 @@
 FROM python:3-alpine
 
 RUN apk update \
-   && apk add git openssl-dev libffi-dev python-dev build-base
+   && apk add git openssl-dev libffi-dev python3-dev build-base
 
 RUN mkdir -p /usr/src/app
 
