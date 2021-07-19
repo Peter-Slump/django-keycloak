@@ -10,7 +10,7 @@ from django_keycloak.models import (
 )
 
 
-class UserFactory(factory.DjangoModelFactory):
+class UserFactory(factory.django.DjangoModelFactory):
 
     class Meta(object):
         model = get_user_model()
@@ -18,7 +18,7 @@ class UserFactory(factory.DjangoModelFactory):
     username = factory.Faker('user_name')
 
 
-class ServerFactory(factory.DjangoModelFactory):
+class ServerFactory(factory.django.DjangoModelFactory):
 
     class Meta(object):
         model = Server
@@ -26,7 +26,7 @@ class ServerFactory(factory.DjangoModelFactory):
     url = factory.Faker('url', schemes=['https'])
 
 
-class RealmFactory(factory.DjangoModelFactory):
+class RealmFactory(factory.django.DjangoModelFactory):
 
     class Meta(object):
         model = Realm
@@ -42,7 +42,7 @@ class RealmFactory(factory.DjangoModelFactory):
                                     'realm')
 
 
-class OpenIdConnectProfileFactory(factory.DjangoModelFactory):
+class OpenIdConnectProfileFactory(factory.django.DjangoModelFactory):
 
     class Meta(object):
         model = OpenIdConnectProfile
@@ -52,7 +52,7 @@ class OpenIdConnectProfileFactory(factory.DjangoModelFactory):
     user = factory.SubFactory(UserFactory)
 
 
-class ClientFactory(factory.DjangoModelFactory):
+class ClientFactory(factory.django.DjangoModelFactory):
 
     class Meta(object):
         model = Client
