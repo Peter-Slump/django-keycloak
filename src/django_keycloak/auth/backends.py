@@ -46,7 +46,7 @@ class KeycloakAuthorizationBase(object):
             return set()
 
         rpt_decoded = django_keycloak.services.oidc_profile\
-            .get_entitlement(oidc_profile=user_obj.oidc_profile)
+            .get_decoded_jwt(oidc_profile=user_obj.oidc_profile)
 
         if settings.KEYCLOAK_PERMISSIONS_METHOD == 'role':
             return [
