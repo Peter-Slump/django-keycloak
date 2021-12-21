@@ -46,6 +46,10 @@ class KeycloakAuthorizationBase(object):
         if not hasattr(user_obj, '_keycloak_perm_cache'):
             user_obj._keycloak_perm_cache = self.get_keycloak_permissions(
                 user_obj=user_obj)
+        user_forum_groups = user_obj.groups.filter(name__contains='forum_')
+        for group in user_forum_groups:
+            if group.name not in user_obj._keycloak_perm_cache:
+                group.user_set.remove(user_obj)
         for role in keycloak_roles.keys():
             if role in user_obj._keycloak_perm_cache:
                 group = Group.objects.get_or_create(name=keycloak_roles.get(role))[0]
