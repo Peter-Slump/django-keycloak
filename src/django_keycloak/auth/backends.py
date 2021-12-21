@@ -9,6 +9,8 @@ from jose.exceptions import (
     JWTClaimsError,
     JWTError,
 )
+
+from django.contrib.auth.models import Group
 from keycloak.exceptions import KeycloakClientError
 
 import django_keycloak.services.oidc_profile
@@ -16,6 +18,11 @@ import django_keycloak.services.oidc_profile
 
 logger = logging.getLogger(__name__)
 
+keycloak_roles = {
+    'moderator':'forum_moderator',
+    'admin':'forum_admin',
+    'editor':'editor',
+}
 
 class KeycloakAuthorizationBase(object):
 
@@ -39,6 +46,10 @@ class KeycloakAuthorizationBase(object):
         if not hasattr(user_obj, '_keycloak_perm_cache'):
             user_obj._keycloak_perm_cache = self.get_keycloak_permissions(
                 user_obj=user_obj)
+        for role in keycloak_roles.keys():
+            if role in user_obj._keycloak_perm_cache:
+                group = Group.objects.get_or_create(name=keycloak_roles.get(role))[0]
+                group.user_set.add(user_obj)
         return user_obj._keycloak_perm_cache
 
     def get_keycloak_permissions(self, user_obj):
