@@ -118,7 +118,7 @@ class Logout(RedirectView):
         if settings.LOGOUT_REDIRECT_URL:
             return resolve_url(settings.LOGOUT_REDIRECT_URL)
 
-        return reverse('keycloak_login')
+        return self.request.headers['Referer']
 
 
 class SessionIframe(TemplateView):
