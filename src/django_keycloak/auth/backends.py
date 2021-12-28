@@ -18,12 +18,6 @@ import django_keycloak.services.oidc_profile
 
 logger = logging.getLogger(__name__)
 
-keycloak_roles = {
-    'moderator':'forum_moderator',
-    'admin':'forum_admin',
-    'editor':'editor',
-}
-
 class KeycloakAuthorizationBase(object):
 
     def get_user(self, user_id):
@@ -50,9 +44,9 @@ class KeycloakAuthorizationBase(object):
         for group in user_forum_groups:
             if group.name not in user_obj._keycloak_perm_cache:
                 group.user_set.remove(user_obj)
-        for role in keycloak_roles.keys():
-            if role in user_obj._keycloak_perm_cache:
-                group = Group.objects.get_or_create(name=keycloak_roles.get(role))[0]
+        for role in user_obj._keycloak_perm_cache:
+            if Group.objects.filter(name=role).exists():
+                group = Group.objects.get_or_create(name=role)
                 group.user_set.add(user_obj)
         return user_obj._keycloak_perm_cache
 
