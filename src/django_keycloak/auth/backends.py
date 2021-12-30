@@ -44,10 +44,10 @@ class KeycloakAuthorizationBase(object):
         for group in user_forum_groups:
             if group.name not in user_obj._keycloak_perm_cache:
                 group.user_set.remove(user_obj)
-            for role in user_obj._keycloak_perm_cache:
-                if Group.objects.filter(name=role).exists():
-                    group = Group.objects.get(name=role)
-                    group.user_set.add(user_obj)     
+        for role in user_obj._keycloak_perm_cache:
+            if Group.objects.filter(name=role).exists():
+                group = Group.objects.get(name=role)
+                group.user_set.add(user_obj)     
         return user_obj._keycloak_perm_cache
 
     def get_keycloak_permissions(self, user_obj):
