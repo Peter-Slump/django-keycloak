@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import logging
 
 from django.shortcuts import resolve_url
+from django.urls import resolve
 
 from django_keycloak.services.oidc_profile import get_remote_user_model
 
@@ -14,6 +15,7 @@ except ImportError:
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
+from django.core.exceptions import PermissionDenied
 from django.http.response import (
     HttpResponseBadRequest,
     HttpResponseServerError,
@@ -114,11 +116,16 @@ class Logout(RedirectView):
             ])
 
         logout(self.request)
-
+        redirect_uri = self.request.headers['Referer']
         if settings.LOGOUT_REDIRECT_URL:
             return resolve_url(settings.LOGOUT_REDIRECT_URL)
-
-        return self.request.headers['Referer']
+        view, args, kwargs = resolve(self.request.headers['Referer'])
+        kwargs['request'] = self.request
+        try:
+            view(*args, **kwargs)
+        except PermissionDenied:
+            redirect_uri = '/'
+        return redirect_uri
 
 
 class SessionIframe(TemplateView):
