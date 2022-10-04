@@ -102,4 +102,4 @@ For requiring a logged in user you can just use the `standard Django
 functionality <https://docs.djangoproject.com/en/1.11/topics/auth/default/#limiting-access-to-logged-in-users>`_.
 This also counts for `enforcing permissions <https://docs.djangoproject.com/en/1.11/topics/auth/default/#the-permission-required-decorator>`_.
 
-This app makes use of the `Python Keycloak client <https://github.com/Peter-Slump/python-keycloak-client>`_
+This app makes use of the `Python Keycloak client <https://github.com/dabocs/python-keycloak-client>`_

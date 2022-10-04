@@ -20,13 +20,13 @@
 # -- Project information -----------------------------------------------------
 
 project = u'Django Keycloak'
-copyright = u'2018, Peter Slump'
-author = u'Peter Slump'
+copyright = u'2022, Ahmad Dabo'
+author = u'Ahmad Dabo'
 
 # The short X.Y version
-version = u''
+version = u'0.2.0'
 # The full version, including alpha/beta/rc tags
-release = u'0.1.2-dev'
+release = u'0.2.0'
 
 
 # -- General configuration ---------------------------------------------------
