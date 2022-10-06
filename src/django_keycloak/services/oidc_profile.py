@@ -221,7 +221,6 @@ def _update_or_create(client, token_response, initiate_time):
             'id_token_signing_alg_values_supported'],
         issuer=issuer,
         access_token=token_response["access_token"], # modified to fix the issue https://github.com/Peter-Slump/django-keycloak/issues/57
-        options = { "verify_aud": False}, # modified and added options to skip verify_aud to avoid JWTClaimsError, Invalid audience, see https://github.com/Peter-Slump/django-keycloak/issues/18
     )
 
     oidc_profile = update_or_create_user_and_oidc_profile(

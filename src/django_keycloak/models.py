@@ -183,7 +183,6 @@ class OpenIdConnectProfileAbstract(TokenModelAbstract):
             key=client.realm.certs,
             algorithms=client.openid_api_client.well_known[
                 'id_token_signing_alg_values_supported'],
-            options = { "verify_aud": False}, # modified and added options to skip verify_aud to avoid JWTClaimsError, Invalid audience, see https://github.com/Peter-Slump/django-keycloak/issues/18
         )
 
 

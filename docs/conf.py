@@ -20,8 +20,8 @@
 # -- Project information -----------------------------------------------------
 
 project = u'Django Keycloak'
-copyright = u'2022, Ahmad Dabo'
-author = u'Ahmad Dabo'
+copyright = u'2018, Peter Slump'
+author = u'Peter Slump'
 
 # The short X.Y version
 version = u'0.2.0'
