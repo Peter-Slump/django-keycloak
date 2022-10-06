@@ -73,6 +73,14 @@ Release Notes
 
 **unreleased**
 
+**v0.2.0**
+
+* Added support for keycloak > v4 & Django 4.1.1 (should be Django > v2.0)
+* Fixed issues
+    * https://github.com/Peter-Slump/django-keycloak/issues/57
+    * https://github.com/oauth2-proxy/oauth2-proxy/issues/1448
+* Updated steps at documentation to fix issue https://github.com/Peter-Slump/django-keycloak/issues/18.
+
 **v0.1.2-dev**
 
 **v0.1.1**

@@ -37,6 +37,25 @@ After you have added the realm please make sure to run te following actions:
     * :ref:`refresh_certificates`
     * :ref:`synchronize_permissions` (when using the permission system)
 
+
+Configure audience in Keycloak
+==============================
+* Goto to the "Client Scopes" menu
+    * Add Client scope 'my-app-scope'
+    * Within the settings of the 'my-app-scope' goto Mappers tab
+        * Create Protocol Mapper 'my-app-audience'
+            * Name: my-app-audience
+            * Choose Mapper type: Audience
+            * Included Client Audience: my-app
+            * Add to access token: on
+* Configure client my-app in the "Clients" menu
+    * Client Scopes tab in my-app settings
+    * Add available client scopes "my-app-scope" to assigned default client scopes
+
+References:
+    * `Client Scopes <https://www.keycloak.org/docs/latest/server_admin/#_client_scopes>`
+    * `Audience <https://www.keycloak.org/docs/latest/server_admin/#_audience_hardcoded>`
+
 Tools
 =====
 
