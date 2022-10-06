@@ -103,7 +103,7 @@ def update_or_create_user_and_oidc_profile(client, id_token_object):
         UserModel = get_user_model()
         email_field_name = UserModel.get_email_field_name()
         user, _ = UserModel.objects.update_or_create(
-            username=id_token_object['sub'],
+            username=id_token_object['preferred_username'], # modified to map with the username
             defaults={
                 email_field_name: id_token_object.get('email', ''),
                 'first_name': id_token_object.get('given_name', ''),
@@ -166,7 +166,7 @@ def update_or_create_from_code(code, client, redirect_uri):
         code=code, redirect_uri=redirect_uri)
 
     return _update_or_create(client=client, token_response=token_response,
-                             initiate_time=initiate_time)
+                              initiate_time=initiate_time)
 
 
 def update_or_create_from_password_credentials(username, password, client):
@@ -219,7 +219,8 @@ def _update_or_create(client, token_response, initiate_time):
         key=client.realm.certs,
         algorithms=client.openid_api_client.well_known[
             'id_token_signing_alg_values_supported'],
-        issuer=issuer
+        issuer=issuer,
+        access_token=token_response["access_token"], # modified to fix the issue https://github.com/Peter-Slump/django-keycloak/issues/57
     )
 
     oidc_profile = update_or_create_user_and_oidc_profile(
