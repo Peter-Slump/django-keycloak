@@ -28,11 +28,11 @@ setup(
     },
     setup_requires=[
         'pytest-runner',
-        'python-keycloak-client @ git+ssh://git@github.com/dabocs/python-keycloak-client@master#egg=python-keycloak-client',
+        'python-keycloak-client @ git+ssh://git@github.com/dabocs/python-keycloak-client@c5e43234c5cf63586f7d980997b87ca89615f919#egg=python-keycloak-client',
     ],
     
     install_requires=[
-        'python-keycloak-client @ git+ssh://git@github.com/dabocs/python-keycloak-client@master#egg=python-keycloak-client',
+        'python-keycloak-client @ git+ssh://git@github.com/dabocs/python-keycloak-client@c5e43234c5cf63586f7d980997b87ca89615f919#egg=python-keycloak-client',
         'Django>=4.1',
     ],
     tests_require=[
@@ -44,8 +44,8 @@ setup(
     ],
     url='https://github.com/dabocs/django-keycloak',
     license='MIT',
-    author='Peter Slump',
-    author_email='peter@yarf.nl',
+    author='Ahmad Dabo',
+    author_email='dabo.cs@gmail.com',
     description='Install Django Keycloak.',
     classifiers=[]
 
