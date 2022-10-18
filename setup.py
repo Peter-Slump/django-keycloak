@@ -32,7 +32,7 @@ setup(
     ],
     
     install_requires=[
-        'python-keycloak-client @ git+ssh://git@github.com/dabocs/python-keycloak-client@c5e43234c5cf63586f7d980997b87ca89615f919#egg=python-keycloak-client',
+        'python-keycloak-client @ git+ssh://git@github.com/dabocs/python-keycloak-client@c5e43234c5cf63586f7d980997b87ca89615f919#egg=python-keycloak-client>=0.3.0',
         'Django>=4.1',
     ],
     tests_require=[
