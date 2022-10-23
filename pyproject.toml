@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0","python-keycloak-client-pkg==0.3.0", "Django>=4.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "django-keycloak-pkg"
+version = "0.2.0"
+authors = [
+  { name="Ahmad Dabo", email="dabo.cs@gmail.com" },
+]
+description = "Install Django Keycloak"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/dabocs/django-keycloak"
+"Bug Tracker" = "https://github.com/dabocs/django-keycloak/issues"
