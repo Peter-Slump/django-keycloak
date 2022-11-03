@@ -73,6 +73,10 @@ Release Notes
 
 **unreleased**
 
+**v0.2.1**
+
+* Added a feature to use redirect url after successful login using settings.LOGIN_REDIRECT_URL
+
 **v0.2.0**
 
 * Added support for Python 3.9 & Django 4.1

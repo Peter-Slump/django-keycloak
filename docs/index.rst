@@ -74,6 +74,8 @@ add the middleware, configure the urls and point to the correct login page.
     ]
 
     LOGIN_URL = 'keycloak_login'
+    LOGIN_REDIRECT_URL = "after_login"
+    LOGOUT_REDIRECT_URL = "after_logout"
 
 .. code-block:: python
 

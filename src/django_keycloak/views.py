@@ -92,6 +92,9 @@ class LoginComplete(RedirectView):
 
         nonce.delete()
 
+        if settings.LOGIN_REDIRECT_URL:
+            return HttpResponseRedirect(resolve_url(settings.LOGIN_REDIRECT_URL))
+
         return HttpResponseRedirect(nonce.next_path or '/')
 
 
