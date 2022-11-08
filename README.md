@@ -73,6 +73,10 @@ Release Notes
 
 **unreleased**
 
+**v0.2.2**
+
+* Fixed issue by adding migration file to repo
+
 **v0.2.1**
 
 * Added a feature to use redirect url after successful login using settings.LOGIN_REDIRECT_URL
