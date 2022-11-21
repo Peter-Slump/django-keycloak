@@ -16,7 +16,7 @@ Welcome to Django Keycloak's documentation!
    scenario/permissions_by_resources_and_scopes
    scenario/multi_tenancy
 
-Django Keycloak adds Keycloak support to your Django project. It's build on top
+Django Keycloak adds Keycloak support to your Django project. It's built on top
 of `Django's authentication system <https://docs.djangoproject.com/en/1.11/ref/contrib/auth/>`_.
 It works side-by-side with the standard Django authentication implementation and
 has tools to migrate your current users and permissions to Keycloak.
