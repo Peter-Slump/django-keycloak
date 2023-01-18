@@ -73,6 +73,11 @@ Release Notes
 
 **unreleased**
 
+**v0.2.4**
+
+* Fixed refresh token expiration date exists
+
+
 **v0.2.3**
 
 * Fixed ENTTITLMENT issue by commenting the code temporarily, till fully fixed

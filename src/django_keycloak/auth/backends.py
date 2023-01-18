@@ -28,6 +28,9 @@ class KeycloakAuthorizationBase(object):
         except UserModel.DoesNotExist:
             return None
 
+        if not user.oidc_profile or not user.oidc_profile.refresh_expires_before:
+            return None
+
         if user.oidc_profile.refresh_expires_before > timezone.now():
             return user
 
