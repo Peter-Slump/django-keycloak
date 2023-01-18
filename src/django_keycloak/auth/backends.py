@@ -42,6 +42,11 @@ class KeycloakAuthorizationBase(object):
         return user_obj._keycloak_perm_cache
 
     def get_keycloak_permissions(self, user_obj):
+        return set()
+        # FIXME: UNCOMMENT CODE BELLOW AND FIX ENTTITLMENT BUG
+        # https://issues.redhat.com/browse/KEYCLOAK-8353
+
+        
         if not hasattr(user_obj, 'oidc_profile'):
             return set()
 
