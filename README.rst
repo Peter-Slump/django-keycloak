@@ -73,6 +73,11 @@ Release Notes
 
 **unreleased**
 
+**v0.2.3**
+
+* Fixed ENTTITLMENT issue by commenting the code temporarily, till fully fixed
+* https://issues.redhat.com/browse/KEYCLOAK-8353
+
 **v0.2.2**
 
 * Fixed issue by adding migration file to repo

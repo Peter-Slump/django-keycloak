@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "django-keycloak-pkg"
-version = "0.2.2"
+version = "0.2.3"
 authors = [
   { name="Ahmad Dabo", email="dabo.cs@gmail.com" },
 ]
