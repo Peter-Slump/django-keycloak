@@ -10,18 +10,18 @@ Class-based views
     1. Add an import:  from other_app.views import Home
     2. Add a URL to urlpatterns:  url(r'^$', Home.as_view(), name='home')
 Including another URLconf
-    1. Import the include() function: from django.conf.urls import url, include
+    1. Import the include() function: from django.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.urls import re_path
 
 from django_keycloak import views
 
 urlpatterns = [
-    url(r'^login$', views.Login.as_view(), name='keycloak_login'),
-    url(r'^login-complete$', views.LoginComplete.as_view(),
+    re_path(r'^login$', views.Login.as_view(), name='keycloak_login'),
+    re_path(r'^login-complete$', views.LoginComplete.as_view(),
         name='keycloak_login_complete'),
-    url(r'^logout$', views.Logout.as_view(), name='keycloak_logout'),
-    url(r'^session-iframe', views.SessionIframe.as_view(),
+    re_path(r'^logout$', views.Logout.as_view(), name='keycloak_logout'),
+    re_path(r'^session-iframe', views.SessionIframe.as_view(),
         name='keycloak_session_iframe')
 ]
