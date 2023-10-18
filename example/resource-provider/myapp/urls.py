@@ -5,24 +5,24 @@ The `urlpatterns` list routes URLs to views. For more information please see:
 Examples:
 Function views
     1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  url(r'^$', views.home, name='home')
+    2. Add a URL to urlpatterns:  re_path(r'^$', views.home, name='home')
 Class-based views
     1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  url(r'^$', Home.as_view(), name='home')
+    2. Add a URL to urlpatterns:  re_path(r'^$', Home.as_view(), name='home')
 Including another URLconf
-    1. Import the include() function: from django.conf.urls import url, include
-    2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
+    1. Import the include() function: from django.urls import url, include
+    2. Add a URL to urlpatterns:  re_path(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url, include
+from django.urls import re_path, include
 from django.contrib import admin
 
 from myapp import views
 
 
 urlpatterns = [
-    url(r'^$', views.Home.as_view(), name='index'),
-    url(r'^secured$', views.Secured.as_view(), name='secured'),
-    url(r'^permission$', views.Permission.as_view(), name='permission'),
-    url(r'^keycloak/', include('django_keycloak.urls')),
-    url(r'^admin/', admin.site.urls),
+    re_path(r'^$', views.Home.as_view(), name='index'),
+    re_path(r'^secured$', views.Secured.as_view(), name='secured'),
+    re_path(r'^permission$', views.Permission.as_view(), name='permission'),
+    re_path(r'^keycloak/', include('django_keycloak.urls')),
+    re_path(r'^admin/', admin.site.urls),
 ]

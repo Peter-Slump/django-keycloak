@@ -83,7 +83,7 @@ add the middleware, configure the urls and point to the correct login page.
     urlpatterns = [
         ...
 
-        url(r'^keycloak/', include('django_keycloak.urls')),
+        re_path(r'^keycloak/', include('django_keycloak.urls')),
     ]
 
 
